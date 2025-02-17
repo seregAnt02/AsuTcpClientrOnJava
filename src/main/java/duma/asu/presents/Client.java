@@ -1,6 +1,7 @@
 package duma.asu.presents;
 
-import duma.asu.models.Message;
+import duma.asu.models.serializableModels.Message;
+import duma.asu.models.serializableModels.Parameter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,11 +22,11 @@ public class Client {
         this.input = new ObjectInputStream(socket.getInputStream());
     }
 
-    public void sendMessage(){
+    public void sendModel(){
         try {
 
-            Message modelMessage = new Message(name,null, null );
-            output.writeObject(modelMessage);
+            Parameter parameter = new Parameter(this.name);
+            output.writeObject(parameter);
             output.flush();
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){
@@ -33,29 +34,28 @@ public class Client {
                 String toUser = scanner.nextLine();
                 System.out.println("Введите текст сообщения: ");
                 String messageOut = scanner.nextLine();
-                modelMessage = new Message(name, toUser, messageOut);
-                modelSerializable(modelMessage);
-                System.out.println("модель отправлена через сервер, к клиенту: " + modelMessage);
+                parameter = new Parameter(name);
+                modelSerializable(parameter);
+                System.out.println("модель отправлена через сервер, к клиенту: " + parameter);
             }
         } catch (IOException e){
             closeEverything(socket);
         }
     }
 
-    private void modelSerializable(Message modelMessage) throws IOException {
-        this.output.writeObject(modelMessage);
+    private void modelSerializable(Parameter parameter) throws IOException {
+        this.output.writeObject(parameter);
         this.output.flush();
     }
 
-    public void listenForMessage(){
+    public void listenForModel(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Message modelMessage;
                 while (socket.isConnected()){
                     try {
-                        modelMessage = (Message) input.readObject();
-                        System.out.println("ответ от сервера, в виде десериализаций объекта: " + modelMessage);
+                        Parameter parameter = (Parameter) input.readObject();
+                        System.out.println("ответ от сервера, в виде десериализаций объекта: " + parameter);
                     } catch (IOException | ClassNotFoundException e){
                         closeEverything(socket);
                     }

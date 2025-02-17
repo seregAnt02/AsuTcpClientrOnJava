@@ -13,8 +13,8 @@ public class AsuTcpClientApplication {
         String name = scanner.nextLine();
         Socket socket = new Socket("localhost", 1300);
         Client client = new Client(socket, name);
-        client.listenForMessage();
-        client.sendMessage();
+        client.listenForModel();
+        client.sendModel();
 
         out.print(System.getProperty("java.class.path"));
     }
