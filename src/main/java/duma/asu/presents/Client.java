@@ -1,7 +1,9 @@
 package duma.asu.presents;
 
-import duma.asu.models.serializableModels.Message;
+import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
+import duma.asu.views.ViewDialogWithUser;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,38 +17,47 @@ public class Client {
     private ObjectOutputStream output;
     private String name;
 
+    private ReadWriteStreamReturnGenericObject readWriteStreamReturnGenericObject;
+
+    private ViewDialogWithUser viewDialogWithUser;
+
     public Client(Socket socket,  String userName) throws IOException, ClassNotFoundException {
         this.socket = socket;
         this.name = userName;
         this.output = new ObjectOutputStream(socket.getOutputStream());
         this.input = new ObjectInputStream(socket.getInputStream());
+
+        readWriteStreamReturnGenericObject = new ReadWriteStreamReturnGenericObject(this.input, output);
+
+        viewDialogWithUser = new ViewDialogWithUser();
     }
 
     public void sendModel(){
         try {
 
             Parameter parameter = new Parameter(this.name);
-            output.writeObject(parameter);
-            output.flush();
+            parameter.setMeaning(3);
+            SendDataParameter sendDataParameter = parameter;
+            readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
+
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){
-                System.out.println("Кому сообщение(имя пользователя или all): ");
+                viewDialogWithUser.toWhomIsMessage();
                 String toUser = scanner.nextLine();
-                System.out.println("Введите текст сообщения: ");
+                viewDialogWithUser.inputMessage();
                 String messageOut = scanner.nextLine();
-                parameter = new Parameter(name);
-                modelSerializable(parameter);
-                System.out.println("модель отправлена через сервер, к клиенту: " + parameter);
+
+                DataFile dataFile = new DataFile(this.name);
+                dataFile.setExtension(".exe");
+                sendDataParameter = dataFile;
+                readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
+                viewDialogWithUser.sendMessageClient(sendDataParameter);
             }
         } catch (IOException e){
             closeEverything(socket);
         }
     }
 
-    private void modelSerializable(Parameter parameter) throws IOException {
-        this.output.writeObject(parameter);
-        this.output.flush();
-    }
 
     public void listenForModel(){
         new Thread(new Runnable() {
@@ -54,8 +65,9 @@ public class Client {
             public void run() {
                 while (socket.isConnected()){
                     try {
-                        Parameter parameter = (Parameter) input.readObject();
-                        System.out.println("ответ от сервера, в виде десериализаций объекта: " + parameter);
+                        SendDataParameter sendDataParameter =
+                                (DataFile)readWriteStreamReturnGenericObject.modelDeserialization();
+                        viewDialogWithUser.responseMessageServer(sendDataParameter);
                     } catch (IOException | ClassNotFoundException e){
                         closeEverything(socket);
                     }
