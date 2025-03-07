@@ -17,7 +17,7 @@ public class Client {
     private ObjectOutputStream output;
     private String name;
 
-    private ReadWriteStreamReturnGenericObject readWriteStreamReturnGenericObject;
+    private ReadWriteStreamAndReturnGenericObject readWriteStreamReturnGenericObject;
 
     private ViewDialogWithUser viewDialogWithUser;
 
@@ -27,7 +27,7 @@ public class Client {
         this.output = new ObjectOutputStream(socket.getOutputStream());
         this.input = new ObjectInputStream(socket.getInputStream());
 
-        readWriteStreamReturnGenericObject = new ReadWriteStreamReturnGenericObject(this.input, output);
+        readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
         viewDialogWithUser = new ViewDialogWithUser();
     }
