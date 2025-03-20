@@ -1,3 +1,11 @@
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/interfaces/SendDataParameter.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/Duma.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/views/ViewDialogWithUser.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/SendDataObject.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/AsuTcpClientApplication.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/ReadWriteStreamAndReturnGenericObject.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/Parameter.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/applicationStructure.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/Client.java
-/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/Message.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/Message.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/DataFile.java

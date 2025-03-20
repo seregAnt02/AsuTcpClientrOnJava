@@ -1,7 +1,6 @@
 package duma.asu.presents;
 
 import duma.asu.models.interfaces.SendDataParameter;
-import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
 import duma.asu.views.ViewDialogWithUser;
 
@@ -32,10 +31,15 @@ public class Client {
         viewDialogWithUser = new ViewDialogWithUser();
     }
 
-    public void sendModel(){
+    void commandSwitch(){
+
+    }
+
+
+    public void SendDataToServer(){
         try {
 
-            Parameter parameter = new Parameter(this.name);
+            Parameter parameter = new Parameter(this.name, null);
             parameter.setMeaning(3);
             SendDataParameter sendDataParameter = parameter;
             readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
@@ -43,15 +47,21 @@ public class Client {
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){
                 viewDialogWithUser.toWhomIsMessage();
+
                 String toUser = scanner.nextLine();
+
                 viewDialogWithUser.inputMessage();
+
                 String messageOut = scanner.nextLine();
 
-                DataFile dataFile = new DataFile(this.name);
-                dataFile.setExtension(".exe");
-                sendDataParameter = dataFile;
+                parameter = new Parameter(this.name, null);
+                parameter.setName(toUser);
+                parameter.setMessage(messageOut);
+                sendDataParameter = parameter;
+
                 readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
-                viewDialogWithUser.sendMessageClient(sendDataParameter);
+
+                viewDialogWithUser.sendToServer(sendDataParameter);
             }
         } catch (IOException e){
             closeEverything(socket);
@@ -66,7 +76,7 @@ public class Client {
                 while (socket.isConnected()){
                     try {
                         SendDataParameter sendDataParameter =
-                                (DataFile)readWriteStreamReturnGenericObject.modelDeserialization();
+                                (Parameter)readWriteStreamReturnGenericObject.modelDeserialization();
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
                     } catch (IOException | ClassNotFoundException e){
                         closeEverything(socket);

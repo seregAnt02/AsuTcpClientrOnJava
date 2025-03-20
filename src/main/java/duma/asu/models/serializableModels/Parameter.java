@@ -1,5 +1,6 @@
 package duma.asu.models.serializableModels;
 
+
 import duma.asu.models.interfaces.SendDataParameter;
 
 import java.io.Serializable;
@@ -11,29 +12,42 @@ public class Parameter implements Serializable, SendDataParameter {
     private static final long serialVersionUID = 1L;
 
 
-    public UUID id;
-    public Date datetime;
-    public String name;
-    public String codParameter;
-    public String lastUpdate;
-    public int meaning;
-    public int dumaId;// внешний ключь
-    //public Duma duma  = new Duma();//навигационное свойство
+    private UUID id;
+    private Date datetime;
+    private String name;
+    private String codParameter;
+    private String lastUpdate;
+    private int meaning;
+
+    private String message;
+    private int dumaId;// внешний ключь
 
 
-    public Parameter(String name) {
+    public Parameter(String name, String extension) {
         this.name = name;
     }
 
+    public String getName(){ return name; }
 
-    public String getName(){ return this.name; }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public int getMeaning(){ return this.meaning; }
+    public int getMeaning(){ return meaning; }
 
 
     public int setMeaning(int meaning){ return this.meaning = meaning; }
 
+
+    public String getMessage() {
+        return message;
+    }
+
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     @Override
     public String toString() {
@@ -44,6 +58,7 @@ public class Parameter implements Serializable, SendDataParameter {
                 ", codParameter='" + codParameter + '\'' +
                 ", lastUpdate='" + lastUpdate + '\'' +
                 ", meaning=" + meaning +
+                ", message='" + message + '\'' +
                 ", dumaId=" + dumaId +
                 '}';
     }

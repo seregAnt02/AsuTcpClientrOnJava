@@ -19,7 +19,7 @@ public class DataFile implements Serializable, SendDataParameter {
     public byte[] data;
     public String extension;
     public Integer indexFile;
-    public Integer idNumberFolder;
+    public Integer numberFolder;
     public Integer headerSize;
 
 
@@ -44,7 +44,7 @@ public class DataFile implements Serializable, SendDataParameter {
                 ", data=" + Arrays.toString(data) +
                 ", extension='" + extension + '\'' +
                 ", indexFile=" + indexFile +
-                ", idNumberFolder=" + idNumberFolder +
+                ", idNumberFolder=" + numberFolder +
                 ", headerSize=" + headerSize +
                 '}';
     }

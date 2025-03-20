@@ -14,7 +14,7 @@ public class AsuTcpClientApplication {
         Socket socket = new Socket("localhost", 1300);
         Client client = new Client(socket, name);
         client.listenForModel();
-        client.sendModel();
+        client.SendDataToServer();
 
         out.print(System.getProperty("java.class.path"));
     }

@@ -25,7 +25,7 @@
 
 
 import java.io.FileWriter;
-import java.sql.Date;
+import java.net.Socket;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +38,7 @@ class applicationStructure {
         private static final long serialVersionUID = 1L;
 
 
-        private int id;
+        public UUID id;
         private java.sql.Date datetime;
         private String name;
         private String codParameter;
@@ -65,13 +65,14 @@ class applicationStructure {
 
     class DataFile {
 
+        public UUID id;
         public String nameFile;
         public java.util.Date dateTime;
         public Integer filesize;
         public byte[] data;
         public String extension;
         public Integer indexFile;
-        public Integer idNumberFolder;
+        public Integer numberFolder;
         public Integer headerSize;
 
 
@@ -98,8 +99,6 @@ class applicationStructure {
         public int port;
         public String status;
         public int number;
-        public String migration;
-        public int age;
     }
 
     class AdressVideoChannel{}
@@ -114,11 +113,13 @@ class applicationStructure {
                   в аргументах конструктора прописываем ip - адрес и порт.
             2. Принимать входящий запрос с удаленного сервера с помощью протокола TCP/IP транспортного уровня,
                 на изменение или устанавления нового значения.
+               * Добавить JSSE функциональность для шифрования данных, аутентификации сервера,
+                   целостности сообщения и дополнительной аутентификации клиента.
                * Создать обобщенный объект типа ReadWriteStreamAndReturnGenericObject, с одним из методов
                  modelDeserialization(), с возвращаемым обобщенным типом T.
                * Создать интерфейс SendDataParameter, для возврата в методе modelDeserialization
                   десереализованного объекта, т.е. добавить слабасвязанность и универсальность.
-               * Создать функцию sendModel(), для отправки на сервер объекта типа SendDataParameter,
+               * Создать функцию SendDataToServer(), для отправки на сервер объекта типа SendDataParameter,
                   с обновленными данными.
                * Создать функцию ReceiveModel(), для получения объекта типа SendDataParameter,
                   об успешном подключений нового клиента на сервере.
@@ -132,19 +133,22 @@ class applicationStructure {
         void Connect(){}
 
 
-        void sendModel(){}
+        void listenForModel(){}
+
+
+        void SendDataToServer(){}
 
 
         void ReceiveModel(){}
 
 
-        void sendModelToServer(){}
-
-
-        void receiveModelFromServer(){}
+        void commandSwitch(){}
 
 
         void Disconnect(){}
+
+
+        void closeEverything(Socket socket){}
     }
 
     class RTUModbus{
@@ -190,7 +194,7 @@ class applicationStructure {
                  * Создать функцию Proc_cmd(), для запуска нового процесса библиотеки ffmpeg.
                  * Задать задержку 1000 миллисекунд.
                  * Создать фукцию удаления запущенного процесса, для этого подътянуть запущенные
-                     процессы в массив, найти процесс ffmpeg с последующим закрытием,
+                     процессы из массива, найти процесс ffmpeg с последующим закрытием,
                      реализовать задержку рабочего потока на 250 миллисекунд.
         */
 

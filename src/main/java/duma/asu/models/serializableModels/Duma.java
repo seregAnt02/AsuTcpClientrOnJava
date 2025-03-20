@@ -1,9 +1,14 @@
 package duma.asu.models.serializableModels;
 
+import duma.asu.models.interfaces.SendDataParameter;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Duma {
+public class Duma implements Serializable, SendDataParameter {
+
+    private static final long serialVersionUID = 3L;
 
     public UUID id;
     public String guid;
