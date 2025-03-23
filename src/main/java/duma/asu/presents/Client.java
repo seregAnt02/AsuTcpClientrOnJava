@@ -76,7 +76,7 @@ public class Client {
                 while (socket.isConnected()){
                     try {
                         SendDataParameter sendDataParameter =
-                                (Parameter)readWriteStreamReturnGenericObject.modelDeserialization();
+                                (SendDataParameter) readWriteStreamReturnGenericObject.modelDeserialization();
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
                     } catch (IOException | ClassNotFoundException e){
                         closeEverything(socket);
