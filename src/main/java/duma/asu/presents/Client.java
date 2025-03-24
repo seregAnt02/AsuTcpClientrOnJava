@@ -16,7 +16,7 @@ public class Client {
     private ObjectOutputStream output;
     private String name;
 
-    private ReadWriteStreamAndReturnGenericObject readWriteStreamReturnGenericObject;
+    private ReadWriteStreamAndReturnGenericObject<SendDataParameter> readWriteStreamReturnGenericObject;
 
     private ViewDialogWithUser viewDialogWithUser;
 
