@@ -182,9 +182,9 @@ class applicationStructure {
     class StartNewProcess{
 
         /*
-            3 Принимать входящий запрос с удаленного сервера по протоколу TCP/IP транспортного уровня,
+            3. Принимать входящий запрос с удаленного сервера по протоколу TCP/IP транспортного уровня,
                на запуск локального процесса с динамически подключаемой библиотекой ffmpeg.dll:
-                 * Создать функцию Proc_cmd(), для запуска нового процесса библиотеки ffmpeg.
+                 * Создать функцию createProcess(), для запуска нового процесса с библиотекой ffmpeg.
                  * Задать задержку 1000 миллисекунд.
                  * Создать фукцию удаления запущенного процесса, для этого подътянуть запущенные
                      процессы из массива, найти процесс ffmpeg с последующим закрытием,
@@ -192,13 +192,13 @@ class applicationStructure {
         */
 
 
-        void procCmd(AdressVideoChannel adressVideo){}
+        void createProcess(AdressVideoChannel adressVideo){}
 
         void killProc(){}
     }
 
 
-    class createSendDeleteVideoFilesOnClient {
+    class CreateSendDeleteVideoFilesOnClient {
 
         /*
             4. Реализовать фукционал создания, удаления и отправки файлов на удаленный сервер Nginx.
