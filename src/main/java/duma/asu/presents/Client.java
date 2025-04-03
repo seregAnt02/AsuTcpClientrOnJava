@@ -23,7 +23,6 @@ public class Client {
 
     private ViewDialogWithUser viewDialogWithUser;
 
-    private CreateSendDeleteVideoFilesOnClient createSendDeleteVideoFilesOnClient;
 
     private Logger log;
 
@@ -33,30 +32,27 @@ public class Client {
         this.output = new ObjectOutputStream(socket.getOutputStream());
         this.input = new ObjectInputStream(socket.getInputStream());
 
-        readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
+        this.readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
-        viewDialogWithUser = new ViewDialogWithUser();
+        this.viewDialogWithUser = new ViewDialogWithUser();
 
-        this.createSendDeleteVideoFilesOnClient = new CreateSendDeleteVideoFilesOnClient();
-
-        log = Logger.getLogger(Client.class.getName());
+        this.log = Logger.getLogger(Client.class.getName());
     }
 
-    static int count;
-    private void commandSwitch(SendDataParameter sendDataParameter){
+
+
+    private void commandSwitch(SendDataParameter sendDataParameter) throws InterruptedException {
 
         if(sendDataParameter instanceof Parameter){
             log.info(Parameter.class.getName());
         }
-        if(sendDataParameter instanceof DataFile){
+        if(sendDataParameter instanceof DataFile) {
 
             DataFile dataFile = (DataFile) sendDataParameter;
 
-            /*this.createSendDeleteVideoFilesOnClient.createAnFiles(
-                    new AdressVideoChannel(dataFile.getChannel(), "UDP"));*/
+            new CreateSendDeleteVideoFilesOnClient(dataFile.getChannel()).startNewProcess();
 
             log.info(DataFile.class.getName());
-            log.info("Count: " + (++Client.count));
             log.info(dataFile.toString());
         }
     }
@@ -107,7 +103,7 @@ public class Client {
                         commandSwitch(sendDataParameter);
 
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
-                    } catch (IOException | ClassNotFoundException e){
+                    } catch (IOException | ClassNotFoundException | InterruptedException e){
                         closeEverything(socket);
                     }
                 }
