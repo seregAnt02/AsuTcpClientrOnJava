@@ -79,6 +79,9 @@ public class StartNewProcess {
                 if(run.getKey().equals(this.channel)){
                     Process process = run.getValue();
                     process.destroy();
+
+                    array_processes.remove(run.getKey());
+
                     System.out.println("Процесс " + process.pid() + " удален.");
 
                     run = null;

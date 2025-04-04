@@ -52,15 +52,14 @@ public class ServiceCreatesSendDeleteVideoFilesOnClient extends Thread {
                         thread = null;
                     }
                 }
-            } else {
-
-                Thread runnable = this;
-                runnable.start();
-
-                array_threads.put(this.channel, runnable);
-
-                runnable = null;
             }
+
+            Thread runnable = this;
+            runnable.start();
+
+            array_threads.put(this.channel, runnable);
+
+            runnable = null;
 
         }catch (Exception ex){
             System.out.println(ex.getMessage());
