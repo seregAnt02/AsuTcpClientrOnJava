@@ -1,6 +1,5 @@
 package duma.asu.presents;
 
-import duma.asu.models.AdressVideoChannel;
 import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
@@ -50,7 +49,7 @@ public class Client {
 
             DataFile dataFile = (DataFile) sendDataParameter;
 
-            new CreateSendDeleteVideoFilesOnClient(dataFile.getChannel()).startNewProcess();
+            new ServiceCreatesSendDeleteVideoFilesOnClient(dataFile.getChannel()).startNewProcess();
 
             log.info(DataFile.class.getName());
             log.info(dataFile.toString());
