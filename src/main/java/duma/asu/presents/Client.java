@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ public class Client {
     private ViewDialogWithUser viewDialogWithUser;
 
 
+
     private Logger log;
 
     public Client(Socket socket,  String userName) throws IOException, ClassNotFoundException {
@@ -33,26 +36,35 @@ public class Client {
 
         this.readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
+
         this.viewDialogWithUser = new ViewDialogWithUser();
+
 
         this.log = Logger.getLogger(Client.class.getName());
     }
 
 
+    private void commandSwitch(SendDataParameter sendDataParameter){
 
-    private void commandSwitch(SendDataParameter sendDataParameter) throws InterruptedException {
+        try{
+            if(sendDataParameter instanceof Parameter){
+                log.info(Parameter.class.getName());
+            }
 
-        if(sendDataParameter instanceof Parameter){
-            log.info(Parameter.class.getName());
-        }
-        if(sendDataParameter instanceof DataFile) {
+            if(sendDataParameter instanceof DataFile) {
 
-            DataFile dataFile = (DataFile) sendDataParameter;
+                DataFile dataFile = (DataFile) sendDataParameter;
 
-            new ServiceCreatesSendDeleteVideoFilesOnClient(dataFile.getChannel()).startNewProcess();
+                new CreatesVideoFiles(dataFile.getChannel()).startNewProcess();
 
-            log.info(DataFile.class.getName());
-            log.info(dataFile.toString());
+                new SendDeleteVideoFiles(dataFile.getChannel()).start_send_video_thread_to_server();
+
+                log.info(DataFile.class.getName());
+                log.info(dataFile.toString());
+            }
+
+        }catch (IOException ex){
+            log.info(ex.getMessage());
         }
     }
 
@@ -102,7 +114,7 @@ public class Client {
                         commandSwitch(sendDataParameter);
 
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
-                    } catch (IOException | ClassNotFoundException | InterruptedException e){
+                    } catch (IOException | ClassNotFoundException e){
                         closeEverything(socket);
                     }
                 }

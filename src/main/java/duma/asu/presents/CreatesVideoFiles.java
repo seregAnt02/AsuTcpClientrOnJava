@@ -1,20 +1,19 @@
 package duma.asu.presents;
 
-import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServiceCreatesSendDeleteVideoFilesOnClient extends Thread {
+public class CreatesVideoFiles extends Thread {
 
     private StartNewProcess startNewProcess;
 
     private int channel;
 
 
-    public static Map<Integer, Thread> array_threads = new HashMap<>();
+    private static Map<Integer, Thread> array_threads = new HashMap<>();
 
 
-    public ServiceCreatesSendDeleteVideoFilesOnClient(int channel) {
+    public CreatesVideoFiles(int channel) {
 
         this.channel = channel;
 
@@ -65,10 +64,4 @@ public class ServiceCreatesSendDeleteVideoFilesOnClient extends Thread {
             System.out.println(ex.getMessage());
         }
     }
-
-
-    private void SendVideoDataOnVds(Object original_file, FileWriter stream_file, int index_file){}
-
-
-    private void deleteFiles(){}
 }

@@ -198,7 +198,7 @@ class applicationStructure {
     }
 
 
-    class CreateSendDeleteVideoFilesOnClient {
+    class CreatesVideoFiles {
 
         /*
             4. Реализовать фукционал создания, удаления и отправки файлов на удаленный сервер Nginx.
@@ -231,13 +231,21 @@ class applicationStructure {
 
         */
 
+        void startNewProcess(){}
 
-        void createAnFiles(AdressVideoChannel adressVideo, Process process){}
-
-
-        void SendVideoDataOnVds(Object original_file, FileWriter stream_file, int index_file){}
+        void start_send_video_thread_to_server(){}
 
 
-        void deleteFiles(){}
+        void convert_video_files_to_byte(){}
+
+
+        private void sendVideoDataOnServer(byte[] buf){}
+
+
+        private void deleteFiles(){}
+
+
+        private void close() {}
+
     }
 }

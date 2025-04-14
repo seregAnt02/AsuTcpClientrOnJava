@@ -30,10 +30,10 @@ public class StartNewProcess {
         String userHome = System.getProperty("user.home");
         String input_adress = "rtsp://192.168.0.89:554/user=serega&password=sergy7&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol();
         //String output_adress = "/var/www/video/window_0/dash.mpd";
-        String output_adress = userHome + "/projectJava/asuTcpClientOnJava/src/main/resources/video_content/";
-        //String commands = "ffmpeg -rtsp_transport tcp -hide_banner -i " +  input_adress +  " -r 25 -c:v copy -ss 00:01 -f dash -y "  + output_adress;
+        String output_adress = userHome + "/projectJava/asuTcpClientOnJava/src/main/resources/video_content/dash.mpd";
+        String commands = "ffmpeg -rtsp_transport tcp -hide_banner -i " +  input_adress +  " -r 25 -c:v copy -ss 00:01 -f dash -y "  + output_adress;
         //String commands = "ffmpeg -version\n";
-        String commands = "gedit\n";
+        //String commands = "gedit\n";
 
         this.log.info(commands);
 
@@ -44,14 +44,13 @@ public class StartNewProcess {
     protected void createProcess(){
 
         try {
-            //Process p = Runtime.getRuntime().exec("cmd /B start \"\" java -jar someOtherProgram.jar");
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command("sh"); //, "-c", "ls"
-            Process process = builder.start();
+            /*builder.command("sh"); //, "-c", "ls"
+            Process process = builder.start();*/
 
             String command = commandInput(new AdressVideoChannel(channel, "TCP"));
 
-            process = Runtime.getRuntime()
+            Process process = Runtime.getRuntime()
                     .exec(command);
 
             array_processes.put(channel, process);
@@ -62,10 +61,13 @@ public class StartNewProcess {
                 while ((line = input.readLine()) != null) {
                     System.out.println(line);
                 }
+                line = null;
+                input.close();
             }
 
             builder = null;
             process = null;
+            command = null;
 
         } catch (Exception err) {
             err.printStackTrace();
@@ -78,6 +80,7 @@ public class StartNewProcess {
             for (Map.Entry<Integer, Process> run: array_processes.entrySet()){
                 if(run.getKey().equals(this.channel)){
                     Process process = run.getValue();
+
                     process.destroy();
 
                     array_processes.remove(run.getKey());
