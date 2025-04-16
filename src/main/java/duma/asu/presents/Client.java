@@ -55,7 +55,7 @@ public class Client {
 
                 DataFile dataFile = (DataFile) sendDataParameter;
 
-                new CreatesVideoFiles(dataFile.getChannel()).startNewProcess();
+                //new CreatesVideoFiles(dataFile.getChannel()).startNewProcess();
 
                 new SendDeleteVideoFiles(dataFile.getChannel()).start_send_video_thread_to_server();
 

@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public class SendDeleteVideoFiles extends Thread{
 
@@ -88,25 +90,35 @@ public class SendDeleteVideoFiles extends Thread{
 
         for (int i = 0; i < array_files.length; i++){
 
-            byte[] buf = new byte[(int)array_files[i].length()];
-
             try (FileInputStream inputStream = new FileInputStream(array_files[i])) {
 
-                inputStream.read(buf);
+                ByteBuffer number_bytes_in_file = ByteBuffer.allocate(4).putInt((int)array_files[i].length());
 
-                sendVideoDataOnServer(buf);
+                byte[] bytes_name = array_files[i].getName().getBytes();
+
+                byte[] byte_files = new byte[(int) (number_bytes_in_file.capacity() +
+                        bytes_name.length + array_files[i].length())];
+
+                IntStream.range(0, number_bytes_in_file.capacity())
+                        .forEach(x -> byte_files[x] = number_bytes_in_file.array()[x]);
+
+                IntStream.range(0, bytes_name.length)
+                        .forEach(x -> byte_files[x + number_bytes_in_file.capacity()] = bytes_name[x]);
+
+                inputStream.read(byte_files, bytes_name.length, (int) array_files[i].length());
+
+                sendVideoDataOnServer(byte_files);
 
             } catch (IOException ex) {
                 log.info(ex.getMessage());
             }
-
-            close();
 
             packed_video_files = null;
             userDirectory = null;
             files = null;
             array_files = null;
         }
+        close();
     }
 
 
