@@ -88,36 +88,38 @@ public class SendDeleteVideoFiles extends Thread{
         File files = new File(userDirectory + packed_video_files);
         File[] array_files = files.listFiles();
 
+        int header_length = 4;
+
         for (int i = 0; i < array_files.length; i++){
 
             try (FileInputStream inputStream = new FileInputStream(array_files[i])) {
 
-                ByteBuffer number_bytes_in_file = ByteBuffer.allocate(4).putInt((int)array_files[i].length());
+                ByteBuffer length_file = ByteBuffer.allocate(header_length).putInt((int)array_files[i].length());
 
-                byte[] bytes_name = array_files[i].getName().getBytes();
+                byte[] file_name = array_files[i].getName().getBytes();
 
-                byte[] byte_files = new byte[(int) (number_bytes_in_file.capacity() +
-                        bytes_name.length + array_files[i].length())];
+                byte[] array_byte_in_file = new byte[(int) (header_length +
+                        file_name.length + array_files[i].length())];
 
-                IntStream.range(0, number_bytes_in_file.capacity())
-                        .forEach(x -> byte_files[x] = number_bytes_in_file.array()[x]);
+                IntStream.range(0, header_length)
+                        .forEach(x -> array_byte_in_file[x] = length_file.array()[x]);
 
-                IntStream.range(0, bytes_name.length)
-                        .forEach(x -> byte_files[x + number_bytes_in_file.capacity()] = bytes_name[x]);
+                IntStream.range(0, file_name.length)
+                        .forEach(x -> array_byte_in_file[x + header_length] = file_name[x]);
 
-                inputStream.read(byte_files, bytes_name.length, (int) array_files[i].length());
+                inputStream.read(array_byte_in_file, header_length + file_name.length,
+                        (int) array_files[i].length());
 
-                sendVideoDataOnServer(byte_files);
+                sendVideoDataOnServer(array_byte_in_file);
 
             } catch (IOException ex) {
                 log.info(ex.getMessage());
             }
-
-            packed_video_files = null;
-            userDirectory = null;
-            files = null;
-            array_files = null;
         }
+        packed_video_files = null;
+        userDirectory = null;
+        files = null;
+        array_files = null;
         close();
     }
 
@@ -128,6 +130,8 @@ public class SendDeleteVideoFiles extends Thread{
             DatagramPacket packet
                     = new DatagramPacket(buf, buf.length, address, 4445);
             socket.send(packet);
+
+            Thread.sleep(100);
 
             packet = null;
 
