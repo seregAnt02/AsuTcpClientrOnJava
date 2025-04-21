@@ -49,30 +49,19 @@ public class SendDeleteVideoFiles extends Thread{
         try{
             if(array_threads.entrySet()
                     .stream().anyMatch(n -> n.getKey() == this.channel)){
-
                 for (Map.Entry<Integer, Thread> run: array_threads.entrySet()) {
                     if(run.getKey().equals(this.channel)){
-
                         Thread thread = run.getValue();
-
                         thread.interrupt();
 
                         array_threads.remove(run.getKey());
-
                         System.out.println("Поток # " + thread + " удален -> " + thread.getState());
-
                         run = null;
                         thread = null;
                     }
                 }
             }
-
-            Thread runnable = this;
-            runnable.start();
-
-            array_threads.put(this.channel, runnable);
-
-            runnable = null;
+            array_threads.put(this.channel, this);
 
         }catch (Exception ex){
             log.info(ex.getMessage());
@@ -81,32 +70,21 @@ public class SendDeleteVideoFiles extends Thread{
 
 
     private void convert_video_files_to_byte(){
-
         String packed_video_files = "/src/main/resources/video_content/";
         String userDirectory = System.getProperty("user.dir");
-
         File files = new File(userDirectory + packed_video_files);
         File[] array_files = files.listFiles();
-
         int header_length = 4;
-
         for (int i = 0; i < array_files.length; i++){
-
             try (FileInputStream inputStream = new FileInputStream(array_files[i])) {
-
                 ByteBuffer length_file = ByteBuffer.allocate(header_length).putInt((int)array_files[i].length());
-
                 byte[] file_name = array_files[i].getName().getBytes();
-
                 byte[] array_byte_in_file = new byte[(int) (header_length +
                         file_name.length + array_files[i].length())];
-
                 IntStream.range(0, header_length)
                         .forEach(x -> array_byte_in_file[x] = length_file.array()[x]);
-
                 IntStream.range(0, file_name.length)
                         .forEach(x -> array_byte_in_file[x + header_length] = file_name[x]);
-
                 inputStream.read(array_byte_in_file, header_length + file_name.length,
                         (int) array_files[i].length());
 
