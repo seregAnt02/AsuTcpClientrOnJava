@@ -52,13 +52,8 @@ public class CreatesVideoFiles extends Thread {
                     }
                 }
             }
-
-            Thread runnable = this;
-            runnable.start();
-
-            array_threads.put(this.channel, runnable);
-
-            runnable = null;
+            this.start();
+            array_threads.put(this.channel, this);
 
         }catch (Exception ex){
             System.out.println(ex.getMessage());
