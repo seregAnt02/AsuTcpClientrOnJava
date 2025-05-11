@@ -78,18 +78,24 @@ public class SendDeleteVideoFiles extends Thread{
         int header_length = 4;
         for (int i = 0; i < array_files.length; i++){
             try (FileInputStream inputStream = new FileInputStream(array_files[i])) {
-                ByteBuffer length_file = ByteBuffer.allocate(header_length).putInt((int)array_files[i].getName().length());
                 byte[] file_name = array_files[i].getName().getBytes();
-                byte[] array_byte_in_file = new byte[(int) (header_length +
+                ByteBuffer length_name = ByteBuffer.allocate(header_length).putInt(file_name.length);
+                ByteBuffer length_file = ByteBuffer.allocate(header_length).putInt((int)array_files[i].length());
+                byte[] array_byte_in_file = new byte[(int) (header_length * 2 +
                         file_name.length + array_files[i].length())];
                 IntStream.range(0, header_length)
-                        .forEach(x -> array_byte_in_file[x] = length_file.get(x));
+                        .forEach(n -> array_byte_in_file[n] = length_name.get(n));
+                IntStream.range(0, header_length)
+                        .forEach(n -> array_byte_in_file[n + header_length] = length_file.get(n));
                 IntStream.range(0, file_name.length)
-                        .forEach(x -> array_byte_in_file[x + header_length] = file_name[x]);
-                inputStream.read(array_byte_in_file, header_length + file_name.length,
+                        .forEach(n -> array_byte_in_file[n + (header_length * 2)] = file_name[n]);
+                inputStream.read(array_byte_in_file, (header_length * 2) + file_name.length,
                         (int) array_files[i].length());
 
                 sendVideoDataOnServer(array_byte_in_file);
+
+                System.out.println("array_byte_in_file.length -> " + array_files[i].length() +
+                        " file_name.length -> " + file_name.length + "\r\n");
 
             } catch (IOException ex) {
                 log.info(ex.getMessage());
