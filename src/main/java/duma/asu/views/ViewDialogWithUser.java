@@ -10,7 +10,7 @@ public class ViewDialogWithUser {
 
 
     public void sendToServer(SendDataParameter sendDataParameter){
-        System.out.println("Модель отправлена через сервер, к клиенту: " + sendDataParameter);
+        System.out.println("Модель отправлена через сервер, к клиенту: " + sendDataParameter.getNameFile());
     }
 
 

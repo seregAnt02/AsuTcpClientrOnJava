@@ -5,12 +5,11 @@ import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
 import duma.asu.views.ViewDialogWithUser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -44,38 +43,40 @@ public class Client {
     }
 
 
-    private void commandSwitch(SendDataParameter sendDataParameter){
+    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException{
 
-        try{
-            if(sendDataParameter instanceof Parameter){
-                log.info(Parameter.class.getName());
-            }
-
-            if(sendDataParameter instanceof DataFile) {
-
-                DataFile dataFile = (DataFile) sendDataParameter;
-
-                //new CreatesVideoFiles(dataFile.getChannel()).startNewProcess();
-
-                new SendDeleteVideoFiles(dataFile.getChannel()).start_send_video_thread_to_server();
-
-                log.info(DataFile.class.getName());
-                log.info(dataFile.toString());
-            }
-
-        }catch (IOException ex){
-            log.info(ex.getMessage());
+        if(sendDataParameter instanceof Parameter){
+            log.info(Parameter.class.getName());
         }
+
+        if(sendDataParameter instanceof DataFile) {
+
+            DataFile dataFile = (DataFile) sendDataParameter;
+
+            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel());
+            //createsVideoFiles.startNewProcess();
+
+            new SendDeleteVideoFiles(this, dataFile).start_send_video_thread_to_server();
+
+            log.info(DataFile.class.getName());
+            //log.info(dataFile.toString());
+        }
+
     }
 
+    public void sendVideoFilesToServer(SendDataParameter sendDataParameter) throws IOException {
+        readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
+        viewDialogWithUser.sendToServer(sendDataParameter);
+    }
 
     public void SendDataToServer(){
         try {
-
             Parameter parameter = new Parameter(this.name, null);
+            parameter.setName("asd");
             parameter.setMeaning(3);
             SendDataParameter sendDataParameter = parameter;
             readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
+            //viewDialogWithUser.sendToServer(sendDataParameter);
 
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){

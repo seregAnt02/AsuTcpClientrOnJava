@@ -21,6 +21,11 @@ public class CreatesVideoFiles extends Thread {
     }
 
 
+    protected StartNewProcess getStartNewProcess(){
+        return this.startNewProcess;
+    }
+
+
     @Override
     public void run() {
         try {

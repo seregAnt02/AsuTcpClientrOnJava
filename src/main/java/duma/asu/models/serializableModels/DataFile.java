@@ -23,13 +23,27 @@ public class DataFile implements Serializable, SendDataParameter {
     private Integer headerSize;
 
 
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public DataFile() {
+    }
+
     public DataFile(String nameFile) {
         this.nameFile = nameFile;
     }
 
 
-    public String getName(){ return this.nameFile; }
+    public String getNameFile(){ return this.nameFile; }
 
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
 
     public String setExtension(String extension){
         return this.extension = extension;

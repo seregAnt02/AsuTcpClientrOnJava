@@ -5,5 +5,5 @@ public interface SendDataParameter {
     String name = null;
 
 
-    default String getName(){ return name;}
+    default String getNameFile(){ return name;}
 }

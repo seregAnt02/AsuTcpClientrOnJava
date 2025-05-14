@@ -1,34 +1,35 @@
 package duma.asu.presents;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.serializableModels.DataFile;
+
+import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 public class SendDeleteVideoFiles extends Thread{
 
 
-    private DatagramSocket socket;
-    private InetAddress address;
-
+    private Client client;
 
     private static Map<Integer, Thread> array_threads = new HashMap<>();
 
     private int channel;
 
+    static String pathFileName;
     private Logger log;
 
-    public SendDeleteVideoFiles(int channel) throws SocketException, UnknownHostException {
-        socket = new DatagramSocket();
-        address = InetAddress.getByName("localhost");
-
-        this.channel = channel;
-
+    public SendDeleteVideoFiles(Client client, DataFile dataFile) throws SocketException, UnknownHostException {
+        this.client = client;
+        this.channel = dataFile.getChannel();
+        String packed_video_files = "/src/main/resources/video_content/";
+        String userDirectory = System.getProperty("user.dir");
+        pathFileName = String.valueOf(Path.of(userDirectory + packed_video_files));
         this.log = Logger.getLogger(StartNewProcess.class.getName());
     }
 
@@ -36,8 +37,14 @@ public class SendDeleteVideoFiles extends Thread{
     public void run() {
 
        try {
-
-           convert_video_files_to_byte();
+           File file_obj = new File(pathFileName);
+           convert_file_in_object(file_obj);
+           /*for(int i = 0; i < 10; i++){
+               //convert_video_files_to_byte(files);
+               client.sendVideoFilesToServer(file_obj);
+               Thread.sleep(2000);
+           }*/
+           file_obj = null;
 
        } catch (Exception ex){
            log.info(ex.getMessage());
@@ -70,68 +77,52 @@ public class SendDeleteVideoFiles extends Thread{
     }
 
 
-    private void convert_video_files_to_byte(){
-        String packed_video_files = "/src/main/resources/video_content/";
-        String userDirectory = System.getProperty("user.dir");
-        File files = new File(userDirectory + packed_video_files);
-        File[] array_files = files.listFiles();
+    private void convert_file_in_object(File file_obj) throws InterruptedException {
         int header_length = 4;
-        for (int i = 0; i < array_files.length; i++){
-            try (FileInputStream inputStream = new FileInputStream(array_files[i])) {
-                byte[] file_name = array_files[i].getName().getBytes();
-                ByteBuffer length_name = ByteBuffer.allocate(header_length).putInt(file_name.length);
-                ByteBuffer length_file = ByteBuffer.allocate(header_length).putInt((int)array_files[i].length());
-                byte[] array_byte_in_file = new byte[(int) (header_length * 2 +
-                        file_name.length + array_files[i].length())];
-                IntStream.range(0, header_length)
-                        .forEach(n -> array_byte_in_file[n] = length_name.get(n));
-                IntStream.range(0, header_length)
-                        .forEach(n -> array_byte_in_file[n + header_length] = length_file.get(n));
-                IntStream.range(0, file_name.length)
-                        .forEach(n -> array_byte_in_file[n + (header_length * 2)] = file_name[n]);
-                inputStream.read(array_byte_in_file, (header_length * 2) + file_name.length,
-                        (int) array_files[i].length());
+        for (File file : file_obj.listFiles()) {
+            try (FileInputStream inputStream = new FileInputStream(file)) {
+                DataFile dataFile = new DataFile();
+                dataFile.setChannel(2);
+                dataFile.setData(new byte[(int) (file.length())]);
+                dataFile.setNameFile(file.getName());
+                inputStream.read(dataFile.getData(), 0, (int)file.length());
 
-                sendVideoDataOnServer(array_byte_in_file);
-
-                System.out.println("array_byte_in_file.length -> " + array_files[i].length() +
-                        " file_name.length -> " + file_name.length + "\r\n");
+                client.sendVideoFilesToServer((SendDataParameter)dataFile);
+                System.out.println("send file to server: " + file.getName() + "\r\n");
+                Thread.sleep(100);
+                file = null;
+                dataFile = null;
 
             } catch (IOException ex) {
+                //close();
                 log.info(ex.getMessage());
             }
         }
-        packed_video_files = null;
-        userDirectory = null;
-        files = null;
-        array_files = null;
-        close();
     }
 
-
-    private void sendVideoDataOnServer(byte[] buf){
-
-        try{
-            DatagramPacket packet
-                    = new DatagramPacket(buf, buf.length, address, 4445);
-            socket.send(packet);
-
-            Thread.sleep(100);
-
-            packet = null;
-
-        }catch (Exception ex){
-            close();
-            System.out.println(ex.getMessage());
+    public Set<File> listFilesUsingDirectoryStream(String dir) throws IOException {
+        Set<File> fileSet = new HashSet<>();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dir))) {
+            for (Path path : stream) {
+                if (!Files.isDirectory(path)) {
+                    fileSet.add(path.getFileName().toFile());
+                }
+            }
         }
+        return fileSet;
     }
 
 
-    private void deleteFiles(){}
+    private void deleteFiles(File file){
+        if(!file.getName().equals("dash.mpd"))
+                file.delete();
+        System.out.println("Удаление файла: " + file.getName());
+    }
 
 
-    private void close() {
+    /*private void close() {
         socket.close();
-    }
+        System.out.println( "socket.isConnected(): " + socket.isConnected());
+    }*/
 
 }

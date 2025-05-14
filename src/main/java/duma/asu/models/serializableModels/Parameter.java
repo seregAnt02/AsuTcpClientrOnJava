@@ -27,7 +27,7 @@ public class Parameter implements Serializable, SendDataParameter {
         this.name = name;
     }
 
-    public String getName(){ return name; }
+    public String getNameFile(){ return name; }
 
 
     public void setName(String name) {
