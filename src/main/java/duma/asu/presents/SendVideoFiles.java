@@ -12,19 +12,17 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class SendDeleteVideoFiles extends Thread{
+public class SendVideoFiles extends Thread{
 
 
     private Client client;
-
-    private static Map<Integer, Thread> array_threads = new HashMap<>();
 
     private int channel;
 
     static String pathFileName;
     private Logger log;
 
-    public SendDeleteVideoFiles(Client client, DataFile dataFile) throws SocketException, UnknownHostException {
+    public SendVideoFiles(Client client, DataFile dataFile) throws SocketException, UnknownHostException {
         this.client = client;
         this.channel = dataFile.getChannel();
         String packed_video_files = "/src/main/resources/video_content/";
@@ -44,6 +42,7 @@ public class SendDeleteVideoFiles extends Thread{
                client.sendVideoFilesToServer(file_obj);
                Thread.sleep(2000);
            }*/
+           Thread.sleep(100);
            file_obj = null;
 
        } catch (Exception ex){
@@ -52,32 +51,14 @@ public class SendDeleteVideoFiles extends Thread{
     }
 
 
-    public void start_send_video_thread_to_server(){
-        try{
-            if(array_threads.entrySet()
-                    .stream().anyMatch(n -> n.getKey() == this.channel)){
-                for (Map.Entry<Integer, Thread> run: array_threads.entrySet()) {
-                    if(run.getKey().equals(this.channel)){
-                        Thread thread = run.getValue();
-                        thread.interrupt();
-
-                        array_threads.remove(run.getKey());
-                        System.out.println("Поток # " + thread + " удален -> " + thread.getState());
-                        run = null;
-                        thread = null;
-                    }
-                }
-            }
-            this.start();
-            array_threads.put(this.channel, this);
-
-        }catch (Exception ex){
-            log.info(ex.getMessage());
-        }
+    public void start_send_video_thread_to_server() throws InterruptedException {
+       this.start();
+       this.join();
+       this.interrupt();
     }
 
 
-    private void convert_file_in_object(File file_obj) throws InterruptedException {
+    private void convert_file_in_object(File file_obj){
         int header_length = 4;
         for (File file : file_obj.listFiles()) {
             try (FileInputStream inputStream = new FileInputStream(file)) {
@@ -89,12 +70,10 @@ public class SendDeleteVideoFiles extends Thread{
 
                 client.sendVideoFilesToServer((SendDataParameter)dataFile);
                 System.out.println("send file to server: " + file.getName() + "\r\n");
-                Thread.sleep(100);
                 file = null;
                 dataFile = null;
 
             } catch (IOException ex) {
-                //close();
                 log.info(ex.getMessage());
             }
         }

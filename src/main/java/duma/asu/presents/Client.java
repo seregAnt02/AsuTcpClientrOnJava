@@ -5,7 +5,6 @@ import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
 import duma.asu.views.ViewDialogWithUser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -43,23 +42,17 @@ public class Client {
     }
 
 
-    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException{
+    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
 
         if(sendDataParameter instanceof Parameter){
             log.info(Parameter.class.getName());
         }
-
         if(sendDataParameter instanceof DataFile) {
-
             DataFile dataFile = (DataFile) sendDataParameter;
-
             CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel());
             //createsVideoFiles.startNewProcess();
-
-            new SendDeleteVideoFiles(this, dataFile).start_send_video_thread_to_server();
-
+            new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
             log.info(DataFile.class.getName());
-            //log.info(dataFile.toString());
         }
 
     }
@@ -111,11 +104,9 @@ public class Client {
                     try {
                         SendDataParameter sendDataParameter =
                                 (SendDataParameter) readWriteStreamReturnGenericObject.modelDeserialization();
-
                         commandSwitch(sendDataParameter);
-
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
-                    } catch (IOException | ClassNotFoundException e){
+                    } catch (IOException | ClassNotFoundException | InterruptedException e){
                         closeEverything(socket);
                     }
                 }
