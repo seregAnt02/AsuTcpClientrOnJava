@@ -19,15 +19,11 @@ public class SendVideoFiles extends Thread{
 
     private int channel;
 
-    static String pathFileName;
     private Logger log;
 
     public SendVideoFiles(Client client, DataFile dataFile) throws SocketException, UnknownHostException {
         this.client = client;
         this.channel = dataFile.getChannel();
-        String packed_video_files = "/src/main/resources/video_content/";
-        String userDirectory = System.getProperty("user.dir");
-        pathFileName = String.valueOf(Path.of(userDirectory + packed_video_files));
         this.log = Logger.getLogger(StartNewProcess.class.getName());
     }
 
@@ -35,7 +31,7 @@ public class SendVideoFiles extends Thread{
     public void run() {
 
        try {
-           File file_obj = new File(pathFileName);
+           File file_obj = new File(Client.pathFileName);
            convert_file_in_object(file_obj);
            /*for(int i = 0; i < 10; i++){
                //convert_video_files_to_byte(files);
@@ -67,9 +63,10 @@ public class SendVideoFiles extends Thread{
                 dataFile.setData(new byte[(int) (file.length())]);
                 dataFile.setNameFile(file.getName());
                 inputStream.read(dataFile.getData(), 0, (int)file.length());
-
-                client.sendVideoFilesToServer((SendDataParameter)dataFile);
-                System.out.println("send file to server: " + file.getName() + "\r\n");
+                synchronized (this){
+                    this.client.sendVideoFilesToServer((SendDataParameter)dataFile);
+                    System.out.println("send file to server: " + file.getName() + "\r\n");
+                }
                 file = null;
                 dataFile = null;
 
@@ -89,13 +86,6 @@ public class SendVideoFiles extends Thread{
             }
         }
         return fileSet;
-    }
-
-
-    private void deleteFiles(File file){
-        if(!file.getName().equals("dash.mpd"))
-                file.delete();
-        System.out.println("Удаление файла: " + file.getName());
     }
 
 

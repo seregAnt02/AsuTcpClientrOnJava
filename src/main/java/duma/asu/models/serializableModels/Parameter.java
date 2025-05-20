@@ -23,6 +23,8 @@ public class Parameter implements Serializable, SendDataParameter {
     private int dumaId;// внешний ключь
 
 
+    public Parameter(){}
+
     public Parameter(String name, String extension) {
         this.name = name;
     }

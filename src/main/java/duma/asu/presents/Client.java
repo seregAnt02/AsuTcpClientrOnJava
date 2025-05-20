@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 public class Client {
@@ -18,6 +18,8 @@ public class Client {
     private ObjectOutputStream output;
     private String name;
 
+    static String PACKED_VIDEO_FILES;
+    static String pathFileName;
     private ReadWriteStreamAndReturnGenericObject<SendDataParameter> readWriteStreamReturnGenericObject;
 
     private ViewDialogWithUser viewDialogWithUser;
@@ -32,8 +34,13 @@ public class Client {
         this.output = new ObjectOutputStream(socket.getOutputStream());
         this.input = new ObjectInputStream(socket.getInputStream());
 
+        PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
+        String userDirectory = System.getProperty("user.dir");
+        pathFileName = String.valueOf(Path.of(userDirectory + Client.PACKED_VIDEO_FILES));
         this.readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
+        DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
+        deleteVideoFiles.start();
 
         this.viewDialogWithUser = new ViewDialogWithUser();
 
@@ -64,32 +71,12 @@ public class Client {
 
     public void SendDataToServer(){
         try {
-            Parameter parameter = new Parameter(this.name, null);
+            Parameter parameter = new Parameter();
             parameter.setName("asd");
             parameter.setMeaning(3);
             SendDataParameter sendDataParameter = parameter;
             readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
             //viewDialogWithUser.sendToServer(sendDataParameter);
-
-            Scanner scanner = new Scanner(System.in);
-            while (socket.isConnected()){
-                viewDialogWithUser.toWhomIsMessage();
-
-                String toUser = scanner.nextLine();
-
-                viewDialogWithUser.inputMessage();
-
-                String messageOut = scanner.nextLine();
-
-                parameter = new Parameter(this.name, null);
-                parameter.setName(toUser);
-                parameter.setMessage(messageOut);
-                sendDataParameter = parameter;
-
-                readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
-
-                viewDialogWithUser.sendToServer(sendDataParameter);
-            }
         } catch (IOException e){
             closeEverything(socket);
         }

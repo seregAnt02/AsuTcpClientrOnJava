@@ -8,11 +8,11 @@ import static java.lang.System.out;
 
 public class AsuTcpClientApplication {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Scanner scanner = new Scanner(System.in);
+        /*Scanner scanner = new Scanner(System.in);
         System.out.print("Ввыдите своё имя: ");
-        String name = scanner.nextLine();
+        String name = scanner.nextLine();*/
         Socket socket = new Socket("localhost", 1300);
-        Client client = new Client(socket, name);
+        Client client = new Client(socket, "asd");
         client.listenForModel();
         client.SendDataToServer();
 
