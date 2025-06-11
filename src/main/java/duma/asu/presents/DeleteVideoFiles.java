@@ -33,7 +33,7 @@ public class DeleteVideoFiles extends Thread{
             if(name_file.length == 3){
                 String[] file_extension = name_file[2].split("\\.");
                 int number_file = Integer.parseInt(file_extension[0]);
-                if(number_file <= number_file_to_delete){
+                if(file_extension.length == 2 && number_file <= number_file_to_delete){
                     if(array_files[i].delete()) {
                         System.out.println("Файл с номером: " + array_files[i].getName() + " удален.");
                         Thread.sleep(100);

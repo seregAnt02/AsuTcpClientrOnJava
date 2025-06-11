@@ -4,6 +4,7 @@ import duma.asu.models.AdressVideoChannel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -45,8 +46,7 @@ public class StartNewProcess {
 
         try {
             ProcessBuilder builder = new ProcessBuilder();
-            /*builder.command("sh"); //, "-c", "ls"
-            Process process = builder.start();*/
+            /*builder.command("sh"); //, "-c", "ls" */
 
             String command = commandInput(new AdressVideoChannel(channel, "TCP"));
 

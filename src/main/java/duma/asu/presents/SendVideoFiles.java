@@ -33,11 +33,6 @@ public class SendVideoFiles extends Thread{
        try {
            File file_obj = new File(Client.pathFileName);
            convert_file_in_object(file_obj);
-           /*for(int i = 0; i < 10; i++){
-               //convert_video_files_to_byte(files);
-               client.sendVideoFilesToServer(file_obj);
-               Thread.sleep(2000);
-           }*/
            Thread.sleep(100);
            file_obj = null;
 
@@ -57,22 +52,22 @@ public class SendVideoFiles extends Thread{
     private void convert_file_in_object(File file_obj){
         int header_length = 4;
         for (File file : file_obj.listFiles()) {
-            try (FileInputStream inputStream = new FileInputStream(file)) {
-                DataFile dataFile = new DataFile();
-                dataFile.setChannel(2);
-                dataFile.setData(new byte[(int) (file.length())]);
-                dataFile.setNameFile(file.getName());
-                inputStream.read(dataFile.getData(), 0, (int)file.length());
-                synchronized (this){
-                    this.client.sendVideoFilesToServer((SendDataParameter)dataFile);
-                    System.out.println("send file to server: " + file.getName() + "\r\n");
-                }
-                file = null;
-                dataFile = null;
+            if (file.getName().split(".").length != 2)
+                try (FileInputStream inputStream = new FileInputStream(file)) {
+                    DataFile dataFile = new DataFile();
+                    dataFile.setChannel(2);
+                    dataFile.setData(new byte[(int) (file.length())]);
+                    dataFile.setNameFile(file.getName());
+                    inputStream.read(dataFile.getData(), 0, (int) file.length());
+                    synchronized (this) {
+                        this.client.sendVideoFilesToServer((SendDataParameter) dataFile);
+                    }
+                    file = null;
+                    dataFile = null;
 
-            } catch (IOException ex) {
-                log.info(ex.getMessage());
-            }
+                } catch (IOException ex) {
+                    log.info(ex.getMessage());
+                }
         }
     }
 

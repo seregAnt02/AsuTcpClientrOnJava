@@ -6,16 +6,18 @@ import java.util.Map;
 public class CreatesVideoFiles extends Thread {
 
     private int channel;
+    private StartNewProcess startNewProcess;
 
     public CreatesVideoFiles(int channel) {
         this.channel = channel;
+        startNewProcess = new StartNewProcess(this.channel);
     }
 
 
     @Override
     public void run() {
         try {
-            new StartNewProcess(this.channel).createProcess();
+            startNewProcess.createProcess();
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }
@@ -23,8 +25,7 @@ public class CreatesVideoFiles extends Thread {
 
 
     public void startNewProcess() throws InterruptedException {
+        startNewProcess.killProc();
         this.start();
-        this.join();
-        this.interrupt();
     }
 }
