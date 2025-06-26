@@ -3,9 +3,12 @@ package duma.asu.presents;
 import duma.asu.models.AdressVideoChannel;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -26,45 +29,48 @@ public class StartNewProcess {
         this.log = Logger.getLogger(StartNewProcess.class.getName());
     }
 
-    private String commandInput(AdressVideoChannel adressVideo){
-
-        String userHome = System.getProperty("user.home");
-        String input_adress = "rtsp://192.168.0.89:554/user=serega&password=sergy7&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol();
-        //String output_adress = "/var/www/video/window_0/dash.mpd";
-        String output_adress = userHome + "/projectJava/asuTcpClientOnJava/src/main/resources/video_content/dash.mpd";
-        String commands = "ffmpeg -rtsp_transport tcp -hide_banner -i " +  input_adress +  " -r 25 -c:v copy -ss 00:01 -f dash -y "  + output_adress;
-        //String commands = "ffmpeg -version\n";
-        //String commands = "gedit\n";
-
-        this.log.info(commands);
-
+    private List<String> commandInput(AdressVideoChannel adressVideo){
+        List<String> commands = new ArrayList<>();
+        commands.add("ffmpeg");
+        commands.add("-rtsp_transport");
+        commands.add("tcp");
+        commands.add("-i");
+        commands.add("rtsp://192.168.0.89:554/user=serega&password=sergy7&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
+        commands.add("-r");
+        commands.add("25");
+        commands.add("-c:v");
+        commands.add("copy");
+        commands.add("-ss");
+        commands.add("00:01");
+        commands.add("-f");
+        commands.add("dash");
+        commands.add("-y");
+        commands.add(Client.pathFileName + "/dash.mpd");
+        this.log.info(commands.toString());
         return commands;
     }
 
 
     protected void createProcess(){
-
         try {
             ProcessBuilder builder = new ProcessBuilder();
-            /*builder.command("sh"); //, "-c", "ls" */
-
-            String command = commandInput(new AdressVideoChannel(channel, "TCP"));
-
-            Process process = Runtime.getRuntime()
-                    .exec(command);
-
+            builder.redirectErrorStream(true);
+            List<String> command = commandInput(new AdressVideoChannel(channel, "TCP"));
+            builder.command(command);
+            Process process = builder.start();
             array_processes.put(channel, process);
-
             try(BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
-
                 while ((line = input.readLine()) != null) {
-                    System.out.println(line);
+                    if(line.startsWith("dash", 1)){
+                        String[] splitted = line.split(" ");
+                        if(splitted[3].equals("Opening"))
+                            System.out.println(line);
+                    }
                 }
                 line = null;
                 input.close();
             }
-
             builder = null;
             process = null;
             command = null;
