@@ -35,7 +35,7 @@ public class StartNewProcess {
         commands.add("-rtsp_transport");
         commands.add("tcp");
         commands.add("-i");
-        commands.add("rtsp://192.168.0.89:554/user=serega&password=sergy7&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
+        commands.add("rtsp://192.168.0.89:554/user=user&password=password&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
         commands.add("-r");
         commands.add("25");
         commands.add("-c:v");
