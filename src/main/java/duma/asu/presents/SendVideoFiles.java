@@ -13,29 +13,31 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class SendVideoFiles extends Thread{
-
-
     private Client client;
-
-    private int channel;
-
     private Logger log;
+    private List<String> array_packed_files;
 
-    public SendVideoFiles(Client client, DataFile dataFile) throws SocketException, UnknownHostException {
+    public SendVideoFiles(Client client, List<String> packedFile) throws SocketException, UnknownHostException {
         this.client = client;
-        this.channel = dataFile.getChannel();
         this.log = Logger.getLogger(StartNewProcess.class.getName());
+        this.array_packed_files = packedFile;
     }
 
     @Override
     public void run() {
 
        try {
-           File file_obj = new File(Client.pathFileName);
-           convert_file_in_object(file_obj);
-           Thread.sleep(100);
-           file_obj = null;
-
+           for(String packed : this.array_packed_files){
+               String[] split_packed = packed.split("/");
+               String path_file = "/" + split_packed[1] + "/" + split_packed[2] + "/" + split_packed[3] + "/" +
+                                  split_packed[4] + "/" + split_packed[5] + "/" + split_packed[6] + "/" +
+                                  split_packed[7] + "/" + split_packed[8] + "/";
+               Thread.sleep(100);
+               File directory = new File(path_file);
+               String[] split_extension = split_packed[9].split("\\.");
+               convert_file_in_object(directory, split_extension[0] + "." + split_extension[1]);
+               directory = null;
+           }
        } catch (Exception ex){
            log.info(ex.getMessage());
        }
@@ -49,10 +51,11 @@ public class SendVideoFiles extends Thread{
     }
 
 
-    private void convert_file_in_object(File file_obj){
+    private void convert_file_in_object(File directory, String file_name) throws InterruptedException {
         int header_length = 4;
-        for (File file : file_obj.listFiles()) {
-            if (file.getName().split(".").length != 2)
+            File file = Arrays.stream(directory.listFiles()).filter(n -> n.getName().equals(file_name))
+                    .findAny().orElse(null);
+            if (file != null)
                 try (FileInputStream inputStream = new FileInputStream(file)) {
                     DataFile dataFile = new DataFile();
                     dataFile.setChannel(2);
@@ -62,13 +65,14 @@ public class SendVideoFiles extends Thread{
                     synchronized (this) {
                         this.client.sendVideoFilesToServer((SendDataParameter) dataFile);
                     }
+                    file.delete();
                     file = null;
                     dataFile = null;
 
                 } catch (IOException ex) {
                     log.info(ex.getMessage());
                 }
-        }
+            Thread.sleep(100);
     }
 
     public Set<File> listFilesUsingDirectoryStream(String dir) throws IOException {

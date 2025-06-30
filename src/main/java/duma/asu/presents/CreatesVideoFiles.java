@@ -1,16 +1,17 @@
 package duma.asu.presents;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CreatesVideoFiles extends Thread {
-
     private int channel;
     private StartNewProcess startNewProcess;
 
-    public CreatesVideoFiles(int channel) {
+    public CreatesVideoFiles(int channel, Client client) throws SocketException, UnknownHostException {
         this.channel = channel;
-        startNewProcess = new StartNewProcess(this.channel);
+        startNewProcess = new StartNewProcess(this.channel, client);
     }
 
 

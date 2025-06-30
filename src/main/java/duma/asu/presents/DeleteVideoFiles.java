@@ -8,7 +8,7 @@ public class DeleteVideoFiles extends Thread{
     private File file;
 
     public DeleteVideoFiles() {
-        this.file = new File(Client.pathFileName);
+        this.file = new File("${path_file_name}");
     }
 
 
@@ -28,6 +28,7 @@ public class DeleteVideoFiles extends Thread{
     private void file_delete(int number_file_to_delete) throws InterruptedException {
 
         File[] array_files = file.listFiles();
+        if(array_files != null)
         for (int i = 0; i < array_files.length; i++){
             String[] name_file = array_files[i].getName().split("-");
             if(name_file.length == 3){

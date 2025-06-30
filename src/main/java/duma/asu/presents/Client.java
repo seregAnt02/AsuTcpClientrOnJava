@@ -17,9 +17,9 @@ public class Client {
     private ObjectInputStream input;
     private ObjectOutputStream output;
     private String name;
-
     static String PACKED_VIDEO_FILES;
     static String pathFileName;
+
     private ReadWriteStreamAndReturnGenericObject<SendDataParameter> readWriteStreamReturnGenericObject;
 
     private ViewDialogWithUser viewDialogWithUser;
@@ -33,14 +33,14 @@ public class Client {
         this.name = userName;
         this.output = new ObjectOutputStream(socket.getOutputStream());
         this.input = new ObjectInputStream(socket.getInputStream());
+        this.readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
         PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
         String userDirectory = System.getProperty("user.dir");
         pathFileName = String.valueOf(Path.of(userDirectory + Client.PACKED_VIDEO_FILES));
-        this.readWriteStreamReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(this.input, output);
 
-        DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
-        deleteVideoFiles.start();
+        /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
+        deleteVideoFiles.start();*/
 
         this.viewDialogWithUser = new ViewDialogWithUser();
 
@@ -56,7 +56,7 @@ public class Client {
         }
         if(sendDataParameter instanceof DataFile) {
             DataFile dataFile = (DataFile) sendDataParameter;
-            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel());
+            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
             createsVideoFiles.startNewProcess();
             //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
             log.info(DataFile.class.getName());

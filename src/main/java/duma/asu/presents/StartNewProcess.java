@@ -6,26 +6,21 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class StartNewProcess {
-
+    private Client client;
     private Logger log;
-
-
     private Integer channel;
-
     public static Map<Integer, Process> array_processes = new HashMap<>();
 
 
-    public StartNewProcess(int channel) {
-
+    public StartNewProcess(int channel, Client client) throws SocketException, UnknownHostException {
+        this.client = client;
         this.channel = channel;
-
         this.log = Logger.getLogger(StartNewProcess.class.getName());
     }
 
@@ -45,6 +40,7 @@ public class StartNewProcess {
         commands.add("-f");
         commands.add("dash");
         commands.add("-y");
+        //String path = System.getProperty("${custom.config.dir}");
         commands.add(Client.pathFileName + "/dash.mpd");
         this.log.info(commands.toString());
         return commands;
@@ -61,11 +57,21 @@ public class StartNewProcess {
             array_processes.put(channel, process);
             try(BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
+                List<String> array_packed_files = new ArrayList<>();
                 while ((line = input.readLine()) != null) {
                     if(line.startsWith("dash", 1)){
-                        String[] splitted = line.split(" ");
-                        if(splitted[3].equals("Opening"))
-                            System.out.println(line);
+                        String[] split_strip = line.split(" ");
+                        if(split_strip[3].equals("Opening")){
+                            String path_file = split_strip[4].substring(1, split_strip[4].length() - 1);
+                            array_packed_files.add(path_file);
+                            // строку сравнения переделать
+                            if(path_file.equals("/home/serega02/projectJava/asuTcpClientOnJava/src/main/resources/video_content/dash.mpd.tmp")){
+                                new SendVideoFiles(client, array_packed_files).start_send_video_thread_to_server();
+                                /*System.out.println(array_packed_files);
+                                array_packed_files.clear();*/
+                                System.out.println(line);
+                            }
+                        }
                     }
                 }
                 line = null;
