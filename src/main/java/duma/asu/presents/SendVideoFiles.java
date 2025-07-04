@@ -37,6 +37,10 @@ public class SendVideoFiles extends Thread{
                String[] split_extension = split_packed[9].split("\\.");
                convert_file_in_object(directory, split_extension[0] + "." + split_extension[1]);
                directory = null;
+               split_extension = null;
+               path_file = null;
+               split_packed = null;
+               packed = null;
            }
        } catch (Exception ex){
            log.info(ex.getMessage());
@@ -65,7 +69,7 @@ public class SendVideoFiles extends Thread{
                     synchronized (this) {
                         this.client.sendVideoFilesToServer((SendDataParameter) dataFile);
                     }
-                    file.delete();
+                    if(file.delete()) System.out.println("Удален файл: " + file.getName());
                     file = null;
                     dataFile = null;
 

@@ -30,7 +30,8 @@ public class StartNewProcess {
         commands.add("-rtsp_transport");
         commands.add("tcp");
         commands.add("-i");
-        commands.add("rtsp://192.168.0.89:554/user=user&password=password&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
+        //commands.add("rtsp://192.168.0.89:554/user=user&password=password&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
+        commands.add("rtsp://192.168.0.89:554/user=serega&password=sergy7&channel=" + adressVideo.getChannel() + "&stream=" + adressVideo.getProtocol());
         commands.add("-r");
         commands.add("25");
         commands.add("-c:v");
@@ -67,13 +68,15 @@ public class StartNewProcess {
                             // строку сравнения переделать
                             if(path_file.equals("/home/serega02/projectJava/asuTcpClientOnJava/src/main/resources/video_content/dash.mpd.tmp")){
                                 new SendVideoFiles(client, array_packed_files).start_send_video_thread_to_server();
-                                /*System.out.println(array_packed_files);
-                                array_packed_files.clear();*/
                                 System.out.println(line);
+                                array_packed_files.clear();
                             }
+                            split_strip = null;
+                            path_file = null;
                         }
                     }
                 }
+                array_packed_files = null;
                 line = null;
                 input.close();
             }
