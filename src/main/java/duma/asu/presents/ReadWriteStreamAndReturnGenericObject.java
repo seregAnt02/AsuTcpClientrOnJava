@@ -18,8 +18,9 @@ public class ReadWriteStreamAndReturnGenericObject<T> {
 
 
     public void modelSerializable(T sendDataParameter) throws IOException {
-        this.output.writeObject(sendDataParameter);
+        this.output.writeUnshared(sendDataParameter);
         this.output.flush();
+        this.output.reset();
     }
 
 

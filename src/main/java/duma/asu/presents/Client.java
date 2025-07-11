@@ -77,6 +77,8 @@ public class Client {
             SendDataParameter sendDataParameter = parameter;
             readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
             //viewDialogWithUser.sendToServer(sendDataParameter);
+            parameter = null;
+            sendDataParameter = null;
         } catch (IOException e){
             closeEverything(socket);
         }
@@ -93,6 +95,7 @@ public class Client {
                                 (SendDataParameter) readWriteStreamReturnGenericObject.modelDeserialization();
                         commandSwitch(sendDataParameter);
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
+                        sendDataParameter = null;
                     } catch (IOException | ClassNotFoundException | InterruptedException e){
                         closeEverything(socket);
                     }
