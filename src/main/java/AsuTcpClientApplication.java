@@ -1,8 +1,8 @@
 import duma.asu.presents.Client;
+import duma.asu.presents.modbus.RTUModbus;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 import static java.lang.System.out;
 
@@ -15,6 +15,8 @@ public class AsuTcpClientApplication {
         Client client = new Client(socket, "asd");
         client.listenForModel();
         client.SendDataToServer();
+
+        new RTUModbus().start();
 
         out.print(System.getProperty("java.class.path"));
     }
