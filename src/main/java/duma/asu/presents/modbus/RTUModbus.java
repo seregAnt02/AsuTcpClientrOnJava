@@ -2,20 +2,27 @@ package duma.asu.presents.modbus;
 
 /*import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;*/
+import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.modbus.PduPackage;
+import duma.asu.models.serializableModels.DataFile;
+import duma.asu.models.serializableModels.Parameter;
+import duma.asu.presents.Client;
+import duma.asu.presents.CreatesVideoFiles;
 import jssc.*;
 
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.HexFormat;
 
 
 public class RTUModbus extends Thread{
 
 
-    public RTUModbus() {
+    private Client client;
+    public RTUModbus(Client client) {
+        this.client = client;
     }
 
-    private static SerialPort serialPort;
+    static SerialPort serialPort;
 
     private PduPackage pduPackage = new PduPackage();
 
@@ -37,17 +44,30 @@ public class RTUModbus extends Thread{
             //Устанавливаем ивент лисенер и маску
             serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
             //Отправляем запрос устройству
-            while (serialPort.isOpened()){
-                ParsingPdu("10 03 02 06 00 01"); //Hex 10 Dec 16
-                // пакет modBus
-                byte[] frame = Frame(); //"16 03 02 06 00 01
-                // send in modbus network
-                serialPort.writeBytes(frame);
-                Thread.sleep(3000);
-            }
+            ParsingPdu("10 03 02 06 00 01"); //Hex 10 Dec 16
+            // пакет modBus
+            byte[] frame = Frame(); //"16 03 02 06 00 01
+            // send in modbus network
+            serialPort.writeBytes(frame);
+            Thread.sleep(3000);
         }
         catch (SerialPortException | InterruptedException ex) {
             System.out.println(ex);
+        }
+    }
+
+
+
+    public void dataModbus(){
+        try {
+            Parameter parameter = new Parameter();
+            parameter.setName("asd");
+            parameter.setMeaning(3);
+            SendDataParameter sendDataParameter = parameter;
+            client.sendDataToServer(sendDataParameter);
+            sendDataParameter = null;
+        } catch (Exception e){
+            System.out.print(e.getMessage());
         }
     }
 
@@ -165,9 +185,10 @@ public class RTUModbus extends Thread{
     }*/
 
 
-    private static class PortReader implements SerialPortEventListener {
+    private class PortReader implements SerialPortEventListener {
 
-        public void serialEvent(SerialPortEvent event) {
+        public void serialEvent(SerialPortEvent event)
+        {
             if(event.isRXCHAR() && event.getEventValue() > 0){
                 try {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
@@ -178,11 +199,10 @@ public class RTUModbus extends Thread{
                             byte_array += data[i] + "\r\n";                        }
                     System.out.print(byte_array);
                     System.out.print("--------\r\n");
-                    //И снова отправляем запрос
-                    //serialPort.writeString("Get data");
-                    //System.out.println(data);
+                    // send data
+                    dataModbus();
                 }
-                catch (SerialPortException ex) {
+                catch (Exception ex) {
                     System.out.println(ex);
                 }
             }

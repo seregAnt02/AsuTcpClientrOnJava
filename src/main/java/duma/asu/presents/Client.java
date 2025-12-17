@@ -3,6 +3,7 @@ package duma.asu.presents;
 import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
+import duma.asu.presents.modbus.RTUModbus;
 import duma.asu.views.ViewDialogWithUser;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class Client {
     static String PACKED_VIDEO_FILES;
     static String pathFileName;
 
-    private ReadWriteStreamAndReturnGenericObject<SendDataParameter> readWriteStreamReturnGenericObject;
+    protected ReadWriteStreamAndReturnGenericObject<SendDataParameter> readWriteStreamReturnGenericObject;
 
     private ViewDialogWithUser viewDialogWithUser;
 
@@ -38,50 +39,16 @@ public class Client {
         PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
         String userDirectory = System.getProperty("user.dir");
         pathFileName = String.valueOf(Path.of(userDirectory + Client.PACKED_VIDEO_FILES));
-
         /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
         deleteVideoFiles.start();*/
-
         this.viewDialogWithUser = new ViewDialogWithUser();
-
-
         this.log = Logger.getLogger(Client.class.getName());
     }
 
 
-    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
-
-        if(sendDataParameter instanceof Parameter){
-            log.info(Parameter.class.getName());
-        }
-        if(sendDataParameter instanceof DataFile) {
-            DataFile dataFile = (DataFile) sendDataParameter;
-            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
-            createsVideoFiles.startNewProcess();
-            //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
-            log.info(DataFile.class.getName());
-        }
-
-    }
-
-    public void sendVideoFilesToServer(SendDataParameter sendDataParameter) throws IOException {
+    public void sendDataToServer(SendDataParameter sendDataParameter) throws IOException {
         readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
         viewDialogWithUser.sendToServer(sendDataParameter);
-    }
-
-    public void SendDataToServer(){
-        try {
-            Parameter parameter = new Parameter();
-            parameter.setName("asd");
-            parameter.setMeaning(3);
-            SendDataParameter sendDataParameter = parameter;
-            readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
-            //viewDialogWithUser.sendToServer(sendDataParameter);
-            parameter = null;
-            sendDataParameter = null;
-        } catch (IOException e){
-            closeEverything(socket);
-        }
     }
 
 
@@ -96,7 +63,7 @@ public class Client {
                         commandSwitch(sendDataParameter);
                         viewDialogWithUser.responseMessageServer(sendDataParameter);
                         sendDataParameter = null;
-                    } catch (IOException | ClassNotFoundException | InterruptedException e){
+                    } catch (IOException | ClassNotFoundException |InterruptedException e){
                         closeEverything(socket);
                     }
                 }
@@ -104,6 +71,20 @@ public class Client {
         }).start();
     }
 
+    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
+
+        if(sendDataParameter instanceof Parameter){
+            RTUModbus rtu = new RTUModbus(this);
+            rtu.start();
+        }
+        if(sendDataParameter instanceof DataFile) {
+            DataFile dataFile = (DataFile) sendDataParameter;
+            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
+            createsVideoFiles.startNewProcess();
+            //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
+            //log.info(DataFile.class.getName());
+        }
+    }
 
     private void closeEverything(Socket socket) {
         try {
