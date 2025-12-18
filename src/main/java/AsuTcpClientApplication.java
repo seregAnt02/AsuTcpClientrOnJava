@@ -15,6 +15,8 @@ public class AsuTcpClientApplication {
         Client client = new Client(socket, "asd");
         client.listenForModel();
 
+        //new RTUModbus(new Client()).start();
+
         out.print(System.getProperty("java.class.path"));
     }
 }

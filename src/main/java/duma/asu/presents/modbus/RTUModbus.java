@@ -4,26 +4,19 @@ package duma.asu.presents.modbus;
 import gnu.io.SerialPort;*/
 import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.modbus.PduPackage;
-import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
 import duma.asu.presents.Client;
-import duma.asu.presents.CreatesVideoFiles;
 import jssc.*;
 
-import java.io.IOException;
 import java.util.HexFormat;
 
 
 public class RTUModbus extends Thread{
-
-
+    static SerialPort serialPort;
     private Client client;
     public RTUModbus(Client client) {
         this.client = client;
     }
-
-    static SerialPort serialPort;
-
     private PduPackage pduPackage = new PduPackage();
 
     @Override
@@ -44,9 +37,9 @@ public class RTUModbus extends Thread{
             //Устанавливаем ивент лисенер и маску
             serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
             //Отправляем запрос устройству
-            ParsingPdu("10 03 02 06 00 01"); //Hex 10 Dec 16
+            parsingPdu("10 03 02 06 00 01"); //Hex 10 Dec 16
             // пакет modBus
-            byte[] frame = Frame(); //"16 03 02 06 00 01
+            byte[] frame = frame(); //"16 03 02 06 00 01
             // send in modbus network
             serialPort.writeBytes(frame);
             Thread.sleep(3000);
@@ -58,11 +51,8 @@ public class RTUModbus extends Thread{
 
 
 
-    public void dataModbus(){
+    private void dataModbus(Parameter parameter){
         try {
-            Parameter parameter = new Parameter();
-            parameter.setName("asd");
-            parameter.setMeaning(3);
             SendDataParameter sendDataParameter = parameter;
             client.sendDataToServer(sendDataParameter);
             sendDataParameter = null;
@@ -70,28 +60,28 @@ public class RTUModbus extends Thread{
             System.out.print(e.getMessage());
         }
     }
+    
 
-
-    private void ParsingPdu(String pdu) {
+    private void parsingPdu(String pdu) {
 
         pduPackage.hing_volume = null;
         pduPackage.low_volume = null;
 
-        String[] mas = pdu.split(" ");
-        pduPackage.slave_adress = Byte.parseByte(mas[0], 16); //16 dec
-        pduPackage.function_code = Integer.parseUnsignedInt(mas[1]);
-        pduPackage.start_adress_high = Integer.parseUnsignedInt(mas[2], 16);// hex
-        pduPackage.start_adress_low = Integer.parseUnsignedInt(mas[3], 16);// hex
-        pduPackage.high_count = Integer.parseUnsignedInt(mas[4], 16);
-        pduPackage.low_count = Integer.parseUnsignedInt(mas[5], 16);
-        pduPackage.hing_volume = pduPackage.hing_volume == null && mas.length > 6 ? mas[6] : "00";
-        pduPackage.low_volume = pduPackage.low_volume == null && mas.length > 6 ? mas[7] : "00";
+        String[] arrayPduPacked = pdu.split(" ");
+        pduPackage.slave_adress = Byte.parseByte(arrayPduPacked[0], 16); //16 dec
+        pduPackage.function_code = Integer.parseUnsignedInt(arrayPduPacked[1]);
+        pduPackage.start_adress_high = Integer.parseUnsignedInt(arrayPduPacked[2], 16);// hex
+        pduPackage.start_adress_low = Integer.parseUnsignedInt(arrayPduPacked[3], 16);// hex
+        pduPackage.high_count = Integer.parseUnsignedInt(arrayPduPacked[4], 16);
+        pduPackage.low_count = Integer.parseUnsignedInt(arrayPduPacked[5], 16);
+        pduPackage.hing_volume = pduPackage.hing_volume == null && arrayPduPacked.length > 6 ? arrayPduPacked[6] : "00";
+        pduPackage.low_volume = pduPackage.low_volume == null && arrayPduPacked.length > 6 ? arrayPduPacked[7] : "00";
 
-        mas = null;
+        arrayPduPacked = null;
         pdu = null;
     }
 
-    private byte[] Frame() {
+    private byte[] frame() {
         String[] hiVolume = pduPackage.hing_volume.split(";");
         String[] loVolume = pduPackage.low_volume.split(";");
         int y = 4; int countByte = 0;
@@ -136,7 +126,7 @@ public class RTUModbus extends Thread{
         frame[3] = (byte) pduPackage.start_adress_low;
         frame[4] = (byte) pduPackage.high_count;
         frame[5] = (byte) pduPackage.low_count;
-        byte[] checkSum = CRC16(frame);
+        byte[] checkSum = crc16(frame);
         frame[y++] = checkSum[0];
         frame[y] = checkSum[1];
 
@@ -147,7 +137,7 @@ public class RTUModbus extends Thread{
         return frame;
     }
 
-    private byte[] CRC16(byte[] data)//конторольная сумма
+    private byte[] crc16(byte[] data)//конторольная сумма
     {
         byte[] checkSum = new byte[2];
         long rec_crc = 0XFFFF;
@@ -186,21 +176,27 @@ public class RTUModbus extends Thread{
 
 
     private class PortReader implements SerialPortEventListener {
+        private Parameter parsHexToParameter(byte[] pduResponse){
+            String pduHex = HexFormat.of().formatHex(pduResponse);
+            Parameter parameter = new Parameter();
+            parameter.setLastUpdate(pduHex);
+            System.out.print("\r\n--------\r\n");
+            System.out.print(pduHex);
+            System.out.print("\r\n--------\r\n");
+            return parameter;
+        }
 
+        
         public void serialEvent(SerialPortEvent event)
         {
             if(event.isRXCHAR() && event.getEventValue() > 0){
                 try {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
                     byte[] data = serialPort.readBytes();
-                    String byte_array = "";
-                    if(data != null)
-                        for (int i = 0; i < data.length; i++){
-                            byte_array += data[i] + "\r\n";                        }
-                    System.out.print(byte_array);
-                    System.out.print("--------\r\n");
+                    // parsHexToInt
+                    Parameter parameter = parsHexToParameter(data);
                     // send data
-                    dataModbus();
+                    dataModbus(parameter);
                 }
                 catch (Exception ex) {
                     System.out.println(ex);

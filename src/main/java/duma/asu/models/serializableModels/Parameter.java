@@ -36,6 +36,10 @@ public class Parameter implements Serializable, SendDataParameter {
         this.name = name;
     }
 
+    public String setLastUpdate(String lastUpdate){
+        return this.lastUpdate = lastUpdate;
+    }
+
     public int getMeaning(){ return meaning; }
 
 

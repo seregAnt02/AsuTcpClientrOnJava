@@ -29,6 +29,9 @@ public class Client {
 
     private Logger log;
 
+
+    public Client(){}
+
     public Client(Socket socket,  String userName) throws IOException, ClassNotFoundException {
         this.socket = socket;
         this.name = userName;
