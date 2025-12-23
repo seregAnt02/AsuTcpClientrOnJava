@@ -44,10 +44,21 @@ public class Client {
         pathFileName = String.valueOf(Path.of(userDirectory + Client.PACKED_VIDEO_FILES));
         /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
         deleteVideoFiles.start();*/
+
         this.viewDialogWithUser = new ViewDialogWithUser();
+
+        Parameter parameter = new Parameter();
+        parameter.setName("asd");
+        parameter.setMeaning(3);
+        SendDataParameter sendDataParameter = parameter;
+        sendDataToServer(sendDataParameter);
+
         this.log = Logger.getLogger(Client.class.getName());
     }
 
+    public String getClientName(){
+        return this.name;
+    }
 
     public void sendDataToServer(SendDataParameter sendDataParameter) throws IOException {
         readWriteStreamReturnGenericObject.modelSerializable(sendDataParameter);
@@ -79,6 +90,7 @@ public class Client {
         if(sendDataParameter instanceof Parameter){
             RTUModbus rtu = new RTUModbus(this);
             rtu.start();
+            rtu = null;
         }
         if(sendDataParameter instanceof DataFile) {
             DataFile dataFile = (DataFile) sendDataParameter;

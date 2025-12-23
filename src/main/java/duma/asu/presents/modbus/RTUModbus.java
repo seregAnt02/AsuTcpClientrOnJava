@@ -42,6 +42,7 @@ public class RTUModbus extends Thread{
             byte[] frame = frame(); //"16 03 02 06 00 01
             // send in modbus network
             serialPort.writeBytes(frame);
+            frame = null;
             Thread.sleep(3000);
         }
         catch (SerialPortException | InterruptedException ex) {
@@ -51,9 +52,8 @@ public class RTUModbus extends Thread{
 
 
 
-    private void dataModbus(Parameter parameter){
+    private void dataModbus(SendDataParameter sendDataParameter){
         try {
-            SendDataParameter sendDataParameter = parameter;
             client.sendDataToServer(sendDataParameter);
             sendDataParameter = null;
         } catch (Exception e){
@@ -176,13 +176,16 @@ public class RTUModbus extends Thread{
 
 
     private class PortReader implements SerialPortEventListener {
-        private Parameter parsHexToParameter(byte[] pduResponse){
+        private SendDataParameter parsHexToParameter(byte[] pduResponse){
             String pduHex = HexFormat.of().formatHex(pduResponse);
             Parameter parameter = new Parameter();
             parameter.setLastUpdate(pduHex);
+            parameter.setName(client.getClientName());
             System.out.print("\r\n--------\r\n");
             System.out.print(pduHex);
             System.out.print("\r\n--------\r\n");
+            pduHex = null;
+            pduResponse = null;
             return parameter;
         }
 
@@ -193,10 +196,17 @@ public class RTUModbus extends Thread{
                 try {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
                     byte[] data = serialPort.readBytes();
-                    // parsHexToInt
-                    Parameter parameter = parsHexToParameter(data);
-                    // send data
-                    dataModbus(parameter);
+                    Thread.sleep(300);
+                    if(data != null){
+                        // parsHexToInt
+                        SendDataParameter sendDataParameter = parsHexToParameter(data);
+                        // send data
+                        dataModbus(sendDataParameter);
+                    }
+                    serialPort.closePort();
+                    Thread.sleep(100);
+                    serialPort = null;
+                    data = null;
                 }
                 catch (Exception ex) {
                     System.out.println(ex);

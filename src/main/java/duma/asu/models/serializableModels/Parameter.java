@@ -15,6 +15,8 @@ public class Parameter implements Serializable, SendDataParameter {
     private UUID id;
     private Date datetime;
     private String name;
+
+    private String nameFile;
     private String codParameter;
     private String lastUpdate;
     private int meaning;
@@ -29,7 +31,9 @@ public class Parameter implements Serializable, SendDataParameter {
         this.name = name;
     }
 
-    public String getNameFile(){ return name; }
+    public String getName(){ return name; }
+
+    public String getNameFile(){ return nameFile; }
 
 
     public void setName(String name) {
