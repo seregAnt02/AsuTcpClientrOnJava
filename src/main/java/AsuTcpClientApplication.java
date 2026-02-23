@@ -1,4 +1,4 @@
-import duma.asu.presents.Client;
+import duma.asu.presents.SSLSocketClient;
 import duma.asu.presents.modbus.RTUModbus;
 
 import java.io.IOException;
@@ -8,12 +8,9 @@ import static java.lang.System.out;
 
 public class AsuTcpClientApplication {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        /*Scanner scanner = new Scanner(System.in);
-        System.out.print("Ввыдите своё имя: ");
-        String name = scanner.nextLine();*/
-        Socket socket = new Socket("localhost", 1300);
-        Client client = new Client(socket, "asd");
-        client.listenForModel();
+
+        SSLSocketClient sslSocketClient = new SSLSocketClient("192.168.0.10", 1300);
+        sslSocketClient.runClient();
 
         //new RTUModbus(new Client()).start();
 

@@ -1,31 +1,29 @@
 package duma.asu.presents;
 
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 public class ReadWriteStreamAndReturnGenericObject<T> {
 
-    private final ObjectInputStream input;
-    private final ObjectOutputStream output;
+    private final Socket socket;
+    private ObjectOutputStream out;
 
-
-    public ReadWriteStreamAndReturnGenericObject(ObjectInputStream input, ObjectOutputStream output) {
-        this.input = input;
-        this.output = output;
+    public ReadWriteStreamAndReturnGenericObject(Socket socket, ObjectOutputStream out) {
+        this.socket = socket;
+        this.out = out;
     }
 
-
-    public void modelSerializable(T sendDataParameter) throws IOException {
-        this.output.writeUnshared(sendDataParameter);
-        this.output.flush();
-        this.output.reset();
-    }
-
-
-    public T modelDeserialization() throws IOException, ClassNotFoundException {
-        T parameter = (T) input.readObject();
+    protected T InputDeserialization(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        T parameter = (T) in.readUnshared();
         return parameter;
     }
+
+
+    protected void outSerialization(T sendDataParameter) throws IOException, ClassNotFoundException {
+        out.writeObject(sendDataParameter);
+        out.flush();
+    }
+
 }

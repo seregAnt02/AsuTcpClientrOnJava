@@ -13,11 +13,11 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class SendVideoFiles extends Thread{
-    private Client client;
+    private SSLSocketClient client;
     private Logger log;
     private List<String> array_packed_files;
 
-    public SendVideoFiles(Client client, List<String> packedFile) throws SocketException, UnknownHostException {
+    public SendVideoFiles(SSLSocketClient client, List<String> packedFile) throws SocketException, UnknownHostException {
         this.client = client;
         this.log = Logger.getLogger(StartNewProcess.class.getName());
         this.array_packed_files = packedFile;

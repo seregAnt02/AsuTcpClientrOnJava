@@ -1,10 +1,9 @@
 package duma.asu.models.serializableModels;
 
-
 import duma.asu.models.interfaces.SendDataParameter;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.UUID;
 
 public class Parameter implements Serializable, SendDataParameter {
@@ -15,8 +14,6 @@ public class Parameter implements Serializable, SendDataParameter {
     private UUID id;
     private Date datetime;
     private String name;
-
-    private String nameFile;
     private String codParameter;
     private String lastUpdate;
     private int meaning;
@@ -25,24 +22,12 @@ public class Parameter implements Serializable, SendDataParameter {
     private int dumaId;// внешний ключь
 
 
-    public Parameter(){}
-
     public Parameter(String name, String extension) {
         this.name = name;
     }
 
     public String getName(){ return name; }
 
-    public String getNameFile(){ return nameFile; }
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String setLastUpdate(String lastUpdate){
-        return this.lastUpdate = lastUpdate;
-    }
 
     public int getMeaning(){ return meaning; }
 

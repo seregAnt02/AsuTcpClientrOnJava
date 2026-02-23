@@ -1,0 +1,152 @@
+package duma.asu.presents;
+
+import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.serializableModels.DataFile;
+import duma.asu.models.serializableModels.Parameter;
+import duma.asu.presents.modbus.RTUModbus;
+import duma.asu.views.ViewDialogWithUser;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Path;
+import java.util.Scanner;
+import java.util.logging.Logger;
+
+public class SSLSocketClient {
+
+    private String host;
+    private int port;
+
+    protected ReadWriteStreamAndReturnGenericObject readWriteStreamAndReturnGenericObject;
+    //private String name;
+
+    static String PACKED_VIDEO_FILES;
+    static String pathFileName;
+
+
+    private ViewDialogWithUser viewDialogWithUser;
+
+    private Logger log;
+    
+
+    public SSLSocketClient(String host, int port) throws IOException {
+
+        // Указываем параметры хранилища ключей
+        System.setProperty("javax.net.ssl.keyStore", "/home/serega02/cert_key/clientkeystore.p12");
+        System.setProperty("javax.net.ssl.keyStorePassword", "password");
+        // Настраиваем хранилище доверенных сертификатов
+        System.setProperty("javax.net.ssl.trustStore", "/home/serega02/cert_key/clienttruststore.jks");
+        System.setProperty("javax.net.ssl.trustStorePassword", "password");
+
+        this.host = host;
+        this.port = port;
+
+
+        PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
+        String userDirectory = System.getProperty("user.dir");
+        pathFileName = String.valueOf(Path.of(userDirectory + SSLSocketClient.PACKED_VIDEO_FILES));
+        /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
+        deleteVideoFiles.start();*/
+
+        this.viewDialogWithUser = new ViewDialogWithUser();
+    }
+
+
+    public void runClient() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SocketFactory factory = SSLSocketFactory.getDefault();
+                    try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
+
+                        socket.setEnabledCipherSuites(new String[]{"TLS_AES_128_GCM_SHA256"});
+                        socket.setEnabledProtocols(new String[]{"TLSv1.3"});
+
+                        if (!socket.isClosed()) {
+                            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
+                            readWriteStreamAndReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(socket, out);
+
+                            SendDataParameter sendDataParameter = new Parameter("Hello client!!!", null);//dataModelParameter();
+                            sendDataToServer(sendDataParameter);
+
+                            listenForModel(socket);
+
+                            Scanner scanner = new Scanner(System.in);
+                            System.out.print("Введите символы для выхода из программы: \r\n");
+                            scanner.nextLine();
+                        }
+
+                    }
+                } catch (Exception e) {
+                    System.out.println( "\r\nException -> " + e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    public void sendDataToServer(SendDataParameter sendDataParameter){
+        try {
+            readWriteStreamAndReturnGenericObject.outSerialization(sendDataParameter);
+            viewDialogWithUser.sendToServer(sendDataParameter);
+        }catch (IOException | ClassNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    
+    private void listenForModel(Socket socket){
+        new Thread(() -> {
+            try {
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            while (!socket.isClosed()){
+                    SendDataParameter sendDataParameter = (SendDataParameter)in.readUnshared();
+                    //commandSwitch(sendDataParameter);
+                    viewDialogWithUser.responseMessageServer(sendDataParameter);
+                    sendDataParameter = null;
+                }
+            } catch (IOException | ClassNotFoundException e){
+                closeEverything(socket);
+            }
+        }).start();
+    }
+
+    private Parameter dataModelParameter() throws IOException {
+
+        Parameter parameter = new Parameter("asd", null);
+        //parameter.setName("asd");
+        parameter.setMeaning(3);
+        //SendDataParameter sendDataParameter = parameter;
+        return parameter;
+    }
+    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
+
+        if(sendDataParameter instanceof Parameter){
+            RTUModbus rtu = new RTUModbus(this);
+            rtu.start();
+            rtu = null;
+        }
+        if(sendDataParameter instanceof DataFile) {
+            DataFile dataFile = (DataFile) sendDataParameter;
+            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
+            createsVideoFiles.startNewProcess();
+            //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
+            //log.info(DataFile.class.getName());
+        }
+    }
+
+    private void closeEverything(Socket socket) {
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}

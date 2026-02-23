@@ -5,7 +5,7 @@ import gnu.io.SerialPort;*/
 import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.modbus.PduPackage;
 import duma.asu.models.serializableModels.Parameter;
-import duma.asu.presents.Client;
+import duma.asu.presents.SSLSocketClient;
 import jssc.*;
 
 import java.util.HexFormat;
@@ -13,8 +13,8 @@ import java.util.HexFormat;
 
 public class RTUModbus extends Thread{
     static SerialPort serialPort;
-    private Client client;
-    public RTUModbus(Client client) {
+    private SSLSocketClient client;
+    public RTUModbus(SSLSocketClient client) {
         this.client = client;
     }
     private PduPackage pduPackage = new PduPackage();
@@ -178,9 +178,9 @@ public class RTUModbus extends Thread{
     private class PortReader implements SerialPortEventListener {
         private SendDataParameter parsHexToParameter(byte[] pduResponse){
             String pduHex = HexFormat.of().formatHex(pduResponse);
-            Parameter parameter = new Parameter();
-            parameter.setLastUpdate(pduHex);
-            parameter.setName(client.getClientName());
+            Parameter parameter = new Parameter("asd", null);
+            //parameter.setLastUpdate(pduHex);
+            //parameter.setName(client.getClientName());
             System.out.print("\r\n--------\r\n");
             System.out.print(pduHex);
             System.out.print("\r\n--------\r\n");

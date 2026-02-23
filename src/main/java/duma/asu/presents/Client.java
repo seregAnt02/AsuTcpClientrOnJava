@@ -1,3 +1,4 @@
+/*
 package duma.asu.presents;
 
 import duma.asu.models.interfaces.SendDataParameter;
@@ -42,8 +43,10 @@ public class Client {
         PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
         String userDirectory = System.getProperty("user.dir");
         pathFileName = String.valueOf(Path.of(userDirectory + Client.PACKED_VIDEO_FILES));
-        /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
-        deleteVideoFiles.start();*/
+        */
+/*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
+        deleteVideoFiles.start();*//*
+
 
         this.viewDialogWithUser = new ViewDialogWithUser();
 
@@ -87,7 +90,8 @@ public class Client {
 
     private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
 
-        if(sendDataParameter instanceof Parameter){
+      */
+/*  if(sendDataParameter instanceof Parameter){
             RTUModbus rtu = new RTUModbus(this);
             rtu.start();
             rtu = null;
@@ -98,7 +102,8 @@ public class Client {
             createsVideoFiles.startNewProcess();
             //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
             //log.info(DataFile.class.getName());
-        }
+        }*//*
+
     }
 
     private void closeEverything(Socket socket) {
@@ -118,3 +123,4 @@ public class Client {
     }
 
 }
+*/

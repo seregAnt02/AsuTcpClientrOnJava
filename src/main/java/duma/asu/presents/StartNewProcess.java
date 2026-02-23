@@ -3,22 +3,20 @@ package duma.asu.presents;
 import duma.asu.models.AdressVideoChannel;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class StartNewProcess {
-    private Client client;
+    private SSLSocketClient client;
     private Logger log;
     private Integer channel;
     public static Map<Integer, Process> array_processes = new HashMap<>();
 
 
-    public StartNewProcess(int channel, Client client) throws SocketException, UnknownHostException {
+    public StartNewProcess(int channel, SSLSocketClient client) throws SocketException, UnknownHostException {
         this.client = client;
         this.channel = channel;
         this.log = Logger.getLogger(StartNewProcess.class.getName());
@@ -42,7 +40,7 @@ public class StartNewProcess {
         commands.add("dash");
         commands.add("-y");
         //String path = System.getProperty("${custom.config.dir}");
-        commands.add(Client.pathFileName + "/dash.mpd");
+        commands.add(SSLSocketClient.pathFileName + "/dash.mpd");
         this.log.info(commands.toString());
         return commands;
     }
