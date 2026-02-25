@@ -19,6 +19,7 @@ applicationStructure$StartNewProcess.class
 duma/asu/presents/CreatesVideoFiles.class
 duma/asu/models/serializableModels/DataFile.class
 duma/asu/presents/SendVideoFiles.class
+duma/asu/presents/SerializationAndDeserialization.class
 duma/asu/presents/SSLSocketClient$1.class
 duma/asu/views/ViewDialogWithUser.class
 applicationStructure$DataFile.class

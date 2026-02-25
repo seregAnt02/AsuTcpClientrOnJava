@@ -8,6 +8,7 @@
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/Parameter.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/Client.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/StartNewProcess.java
+/home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/SerializationAndDeserialization.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/AdressVideoChannel.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/presents/SSLSocketClient.java
 /home/serega02/projectJava/asuTcpClientOnJava/src/main/java/duma/asu/models/serializableModels/Duma.java

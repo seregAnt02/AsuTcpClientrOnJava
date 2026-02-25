@@ -12,7 +12,7 @@ public class AsuTcpClientApplication {
         SSLSocketClient sslSocketClient = new SSLSocketClient("192.168.0.10", 1300);
         sslSocketClient.runClient();
 
-        //new RTUModbus(new Client()).start();
+        //new RTUModbus(new Client()).start(); Test object!!!
 
         out.print(System.getProperty("java.class.path"));
     }

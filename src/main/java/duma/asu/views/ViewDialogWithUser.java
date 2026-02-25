@@ -4,10 +4,17 @@ import duma.asu.models.interfaces.SendDataParameter;
 import duma.asu.models.serializableModels.DataFile;
 import duma.asu.models.serializableModels.Parameter;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class ViewDialogWithUser {
 
     public void responseMessageServer(SendDataParameter sendDataParameter){
-        System.out.println("Ответ от сервера, в виде десериализаций объекта: " + ((Parameter)sendDataParameter).getName());
+        Calendar calendar = new GregorianCalendar();
+        System.out.println(calendar.getTime() +
+                " Ответ от сервера, в виде десериализаций объекта: " + ((Parameter)sendDataParameter).getName());
     }
 
 

@@ -20,7 +20,7 @@ public class SSLSocketClient {
     private String host;
     private int port;
 
-    protected ReadWriteStreamAndReturnGenericObject readWriteStreamAndReturnGenericObject;
+    protected SerializationAndDeserialization serializationAndDeserialization;
     //private String name;
 
     static String PACKED_VIDEO_FILES;
@@ -48,8 +48,9 @@ public class SSLSocketClient {
         PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
         String userDirectory = System.getProperty("user.dir");
         pathFileName = String.valueOf(Path.of(userDirectory + SSLSocketClient.PACKED_VIDEO_FILES));
-        /*DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
-        deleteVideoFiles.start();*/
+
+        DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
+        deleteVideoFiles.start();
 
         this.viewDialogWithUser = new ViewDialogWithUser();
     }
@@ -69,7 +70,7 @@ public class SSLSocketClient {
                         if (!socket.isClosed()) {
                             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-                            readWriteStreamAndReturnGenericObject = new ReadWriteStreamAndReturnGenericObject(socket, out);
+                            serializationAndDeserialization = new SerializationAndDeserialization(socket, out);
 
                             SendDataParameter sendDataParameter = new Parameter("Hello client!!!", null);//dataModelParameter();
                             sendDataToServer(sendDataParameter);
@@ -77,7 +78,7 @@ public class SSLSocketClient {
                             listenForModel(socket);
 
                             Scanner scanner = new Scanner(System.in);
-                            System.out.print("Введите символы для выхода из программы: \r\n");
+                            System.out.print("Введите символ(ы) для выхода из программы: \r\n");
                             scanner.nextLine();
                         }
 
@@ -90,27 +91,23 @@ public class SSLSocketClient {
     }
 
     public void sendDataToServer(SendDataParameter sendDataParameter){
-        try {
-            readWriteStreamAndReturnGenericObject.outSerialization(sendDataParameter);
-            viewDialogWithUser.sendToServer(sendDataParameter);
-        }catch (IOException | ClassNotFoundException e){
-            System.out.println(e.getMessage());
-        }
+        serializationAndDeserialization.outSerialization(sendDataParameter);
+        viewDialogWithUser.sendToServer(sendDataParameter);
     }
 
 
     
     private void listenForModel(Socket socket){
         new Thread(() -> {
-            try {
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
             while (!socket.isClosed()){
-                    SendDataParameter sendDataParameter = (SendDataParameter)in.readUnshared();
+                    SendDataParameter sendDataParameter =
+                            serializationAndDeserialization.InputDeserialization(in);
                     //commandSwitch(sendDataParameter);
                     viewDialogWithUser.responseMessageServer(sendDataParameter);
                     sendDataParameter = null;
                 }
-            } catch (IOException | ClassNotFoundException e){
+            } catch (IOException e){
                 closeEverything(socket);
             }
         }).start();
