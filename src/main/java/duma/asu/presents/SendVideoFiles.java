@@ -1,6 +1,6 @@
 package duma.asu.presents;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 import duma.asu.models.serializableModels.DataFile;
 
 import java.io.*;
@@ -67,7 +67,7 @@ public class SendVideoFiles extends Thread{
                     dataFile.setNameFile(file.getName());
                     inputStream.read(dataFile.getData(), 0, (int) file.length());
                     synchronized (this) {
-                        this.client.sendDataToServer((SendDataParameter) dataFile);
+                        this.client.sendDataToServer((AsuAndVideoData) dataFile);
                     }
                     if(file.delete()) System.out.println("Удален файл: " + file.getName());
                     file = null;

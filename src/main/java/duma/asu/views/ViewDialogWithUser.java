@@ -1,28 +1,26 @@
 package duma.asu.views;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 import duma.asu.models.serializableModels.DataFile;
-import duma.asu.models.serializableModels.Parameter;
+import duma.asu.models.serializableModels.PR200;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class ViewDialogWithUser {
 
-    public void responseMessageServer(SendDataParameter sendDataParameter){
+    public void responseMessageServer(AsuAndVideoData sendDataParameter){
         Calendar calendar = new GregorianCalendar();
         System.out.println(calendar.getTime() +
-                " Ответ от сервера, в виде десериализаций объекта: " + ((Parameter)sendDataParameter).getName());
+                " Ответ от сервера, в виде десериализаций объекта: " + ((PR200)sendDataParameter).getName());
     }
 
 
-    public void sendToServer(SendDataParameter sendDataParameter){
-        if(sendDataParameter instanceof Parameter)
-            System.out.println("\r\nМодель отправлена серверу, имя клиента: " + ((Parameter) sendDataParameter).getName());
+    public void sendToServer(AsuAndVideoData sendDataParameter){
+        if(sendDataParameter instanceof PR200)
+            System.out.println("\r\nМодель отправлена серверу, имя клиента: " + ((PR200) sendDataParameter).getName());
         if(sendDataParameter instanceof DataFile)
-            System.out.println("Модель отправлена серверу, имя файла: " + ((Parameter)sendDataParameter).getName());
+            System.out.println("Модель отправлена серверу, имя файла: " + ((PR200)sendDataParameter).getName());
     }
 
 

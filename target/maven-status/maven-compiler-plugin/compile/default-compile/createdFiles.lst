@@ -5,9 +5,10 @@ applicationStructure$Client.class
 duma/asu/presents/DeleteVideoFiles.class
 duma/asu/models/modbus/PduPackage.class
 applicationStructure$RTUModbus.class
-duma/asu/models/serializableModels/Parameter.class
+duma/asu/models/interfaces/AsuAndVideoData.class
 duma/asu/models/serializableModels/Message.class
 applicationStructure$CreatesVideoFiles.class
+duma/asu/models/serializableModels/PR200.class
 duma/asu/models/serializableModels/Duma.class
 duma/asu/presents/StartNewProcess.class
 duma/asu/models/AdressVideoChannel.class
@@ -24,6 +25,5 @@ duma/asu/presents/SSLSocketClient$1.class
 duma/asu/views/ViewDialogWithUser.class
 applicationStructure$DataFile.class
 duma/asu/presents/SSLSocketClient.class
-duma/asu/models/interfaces/SendDataParameter.class
 duma/asu/presents/modbus/RTUModbus$PortReader.class
 applicationStructure.class

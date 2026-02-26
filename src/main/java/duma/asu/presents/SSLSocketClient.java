@@ -1,8 +1,8 @@
 package duma.asu.presents;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 import duma.asu.models.serializableModels.DataFile;
-import duma.asu.models.serializableModels.Parameter;
+import duma.asu.models.serializableModels.PR200;
 import duma.asu.presents.modbus.RTUModbus;
 import duma.asu.views.ViewDialogWithUser;
 
@@ -72,13 +72,13 @@ public class SSLSocketClient {
 
                             serializationAndDeserialization = new SerializationAndDeserialization(socket, out);
 
-                            SendDataParameter sendDataParameter = new Parameter("Hello client!!!", null);//dataModelParameter();
-                            sendDataToServer(sendDataParameter);
+                            AsuAndVideoData asuAndVideoData = new PR200("Hello client!!!", null);//dataModelParameter();
+                            sendDataToServer(asuAndVideoData);
 
                             listenForModel(socket);
 
                             Scanner scanner = new Scanner(System.in);
-                            System.out.print("Введите символ(ы) для выхода из программы: \r\n");
+                            System.out.print("Введите символ(ы), для выхода из программы: \r\n");
                             scanner.nextLine();
                         }
 
@@ -90,9 +90,9 @@ public class SSLSocketClient {
         }).start();
     }
 
-    public void sendDataToServer(SendDataParameter sendDataParameter){
-        serializationAndDeserialization.outSerialization(sendDataParameter);
-        viewDialogWithUser.sendToServer(sendDataParameter);
+    public void sendDataToServer(AsuAndVideoData asuAndVideoData){
+        serializationAndDeserialization.outSerialization(asuAndVideoData);
+        viewDialogWithUser.sendToServer(asuAndVideoData);
     }
 
 
@@ -101,11 +101,11 @@ public class SSLSocketClient {
         new Thread(() -> {
             try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
             while (!socket.isClosed()){
-                    SendDataParameter sendDataParameter =
-                            serializationAndDeserialization.InputDeserialization(in);
-                    //commandSwitch(sendDataParameter);
-                    viewDialogWithUser.responseMessageServer(sendDataParameter);
-                    sendDataParameter = null;
+                    AsuAndVideoData asuAndVideoData =
+                            serializationAndDeserialization.inputDeserialization(in);
+                    //commandSwitch(asuAndVideoData);
+                    viewDialogWithUser.responseMessageServer(asuAndVideoData);
+                    asuAndVideoData = null;
                 }
             } catch (IOException e){
                 closeEverything(socket);
@@ -113,23 +113,22 @@ public class SSLSocketClient {
         }).start();
     }
 
-    private Parameter dataModelParameter() throws IOException {
+    private PR200 dataModelParameter() throws IOException {
 
-        Parameter parameter = new Parameter("asd", null);
+        PR200 parameter = new PR200("asd", null);
         //parameter.setName("asd");
         parameter.setMeaning(3);
-        //SendDataParameter sendDataParameter = parameter;
         return parameter;
     }
-    private void commandSwitch(SendDataParameter sendDataParameter) throws IOException, InterruptedException {
+    private void commandSwitch(AsuAndVideoData asuAndVideoData) throws IOException, InterruptedException {
 
-        if(sendDataParameter instanceof Parameter){
+        if(asuAndVideoData instanceof PR200){
             RTUModbus rtu = new RTUModbus(this);
             rtu.start();
             rtu = null;
         }
-        if(sendDataParameter instanceof DataFile) {
-            DataFile dataFile = (DataFile) sendDataParameter;
+        if(asuAndVideoData instanceof DataFile) {
+            DataFile dataFile = (DataFile) asuAndVideoData;
             CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
             createsVideoFiles.startNewProcess();
             //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();

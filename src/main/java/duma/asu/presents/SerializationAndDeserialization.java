@@ -1,6 +1,6 @@
 package duma.asu.presents;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,9 +18,9 @@ public class SerializationAndDeserialization {
     }
 
 
-    protected SendDataParameter InputDeserialization(ObjectInputStream in){
+    protected AsuAndVideoData inputDeserialization(ObjectInputStream in){
         try {
-            SendDataParameter parameter = (SendDataParameter) in.readUnshared();
+            AsuAndVideoData parameter = (AsuAndVideoData) in.readUnshared();
             return parameter;
         }catch (IOException | ClassNotFoundException e){
             System.out.println(e.getMessage());
@@ -30,9 +30,9 @@ public class SerializationAndDeserialization {
 
 
 
-    protected void outSerialization(SendDataParameter sendDataParameter) {
+    protected void outSerialization(AsuAndVideoData asuAndVideoData) {
         try {
-            out.writeObject(sendDataParameter);
+            out.writeObject(asuAndVideoData);
             out.flush();
         }catch (IOException e){
             System.out.println(e.getMessage());

@@ -1,13 +1,13 @@
 package duma.asu.models.serializableModels;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-public class DataFile implements Serializable, SendDataParameter {
+public class DataFile implements Serializable, AsuAndVideoData {
 
     private static final long serialVersionUID = 2L;
 

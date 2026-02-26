@@ -1,12 +1,12 @@
 package duma.asu.models.serializableModels;
 
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Parameter implements Serializable, SendDataParameter {
+public class PR200 implements Serializable, AsuAndVideoData {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,7 +22,7 @@ public class Parameter implements Serializable, SendDataParameter {
     private int dumaId;// внешний ключь
 
 
-    public Parameter(String name, String extension) {
+    public PR200(String name, String extension) {
         this.name = name;
     }
 

@@ -1,6 +1,6 @@
 package duma.asu.models.interfaces;
 
-public interface SendDataParameter {
+public interface AsuAndVideoData {
 
     String name = null;
 

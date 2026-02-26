@@ -2,9 +2,9 @@ package duma.asu.presents.modbus;
 
 /*import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;*/
-import duma.asu.models.interfaces.SendDataParameter;
+import duma.asu.models.interfaces.AsuAndVideoData;
 import duma.asu.models.modbus.PduPackage;
-import duma.asu.models.serializableModels.Parameter;
+import duma.asu.models.serializableModels.PR200;
 import duma.asu.presents.SSLSocketClient;
 import jssc.*;
 
@@ -52,7 +52,7 @@ public class RTUModbus extends Thread{
 
 
 
-    private void dataModbus(SendDataParameter sendDataParameter){
+    private void dataModbus(AsuAndVideoData sendDataParameter){
         try {
             client.sendDataToServer(sendDataParameter);
             sendDataParameter = null;
@@ -176,9 +176,9 @@ public class RTUModbus extends Thread{
 
 
     private class PortReader implements SerialPortEventListener {
-        private SendDataParameter parsHexToParameter(byte[] pduResponse){
+        private AsuAndVideoData parsHexToParameter(byte[] pduResponse){
             String pduHex = HexFormat.of().formatHex(pduResponse);
-            Parameter parameter = new Parameter("asd", null);
+            PR200 parameter = new PR200("asd", null);
             //parameter.setLastUpdate(pduHex);
             //parameter.setName(client.getClientName());
             System.out.print("\r\n--------\r\n");
@@ -199,7 +199,7 @@ public class RTUModbus extends Thread{
                     Thread.sleep(300);
                     if(data != null){
                         // parsHexToInt
-                        SendDataParameter sendDataParameter = parsHexToParameter(data);
+                        AsuAndVideoData sendDataParameter = parsHexToParameter(data);
                         // send data
                         dataModbus(sendDataParameter);
                     }
