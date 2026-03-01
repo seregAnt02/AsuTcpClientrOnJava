@@ -23,6 +23,7 @@ public class RTUModbus extends Thread{
     public void run() {
         //Передаём в конструктор имя порта
         serialPort = new SerialPort("/dev/ttyUSB0");
+        if(serialPort != null)
         try {
             //Открываем порт
             serialPort.openPort();
@@ -43,21 +44,10 @@ public class RTUModbus extends Thread{
             // send in modbus network
             serialPort.writeBytes(frame);
             frame = null;
-            Thread.sleep(3000);
+            //Thread.sleep(300);
         }
-        catch (SerialPortException | InterruptedException ex) {
+        catch (SerialPortException ex) {
             System.out.println(ex);
-        }
-    }
-
-
-
-    private void dataModbus(AsuAndVideoData sendDataParameter){
-        try {
-            client.sendDataToServer(sendDataParameter);
-            sendDataParameter = null;
-        } catch (Exception e){
-            System.out.print(e.getMessage());
         }
     }
     
@@ -178,7 +168,8 @@ public class RTUModbus extends Thread{
     private class PortReader implements SerialPortEventListener {
         private AsuAndVideoData parsHexToParameter(byte[] pduResponse){
             String pduHex = HexFormat.of().formatHex(pduResponse);
-            PR200 parameter = new PR200("asd", null);
+            PR200 pr200 = new PR200("asd", null);
+            pr200.setMessage(pduHex);
             //parameter.setLastUpdate(pduHex);
             //parameter.setName(client.getClientName());
             System.out.print("\r\n--------\r\n");
@@ -186,31 +177,29 @@ public class RTUModbus extends Thread{
             System.out.print("\r\n--------\r\n");
             pduHex = null;
             pduResponse = null;
-            return parameter;
+            return pr200;
         }
 
         
-        public void serialEvent(SerialPortEvent event)
-        {
-            if(event.isRXCHAR() && event.getEventValue() > 0){
-                try {
+        public void serialEvent(SerialPortEvent event) {
+            try {
+                if(serialPort != null &&  event.isRXCHAR() && event.getEventValue() > 0){
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
                     byte[] data = serialPort.readBytes();
-                    Thread.sleep(300);
-                    if(data != null){
+                    Thread.sleep(50);
+                    if (data != null) {
                         // parsHexToInt
                         AsuAndVideoData sendDataParameter = parsHexToParameter(data);
                         // send data
-                        dataModbus(sendDataParameter);
+                        client.sendDataToServer(sendDataParameter);
                     }
                     serialPort.closePort();
-                    Thread.sleep(100);
+                    //Thread.sleep(300);
                     serialPort = null;
                     data = null;
                 }
-                catch (Exception ex) {
-                    System.out.println(ex);
-                }
+            } catch (Exception ex) {
+                System.out.println(ex);
             }
         }
     }

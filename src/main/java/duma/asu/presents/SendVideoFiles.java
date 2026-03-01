@@ -17,7 +17,7 @@ public class SendVideoFiles extends Thread{
     private Logger log;
     private List<String> array_packed_files;
 
-    public SendVideoFiles(SSLSocketClient client, List<String> packedFile) throws SocketException, UnknownHostException {
+    public SendVideoFiles(SSLSocketClient client, List<String> packedFile){
         this.client = client;
         this.log = Logger.getLogger(StartNewProcess.class.getName());
         this.array_packed_files = packedFile;

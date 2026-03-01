@@ -103,7 +103,7 @@ public class SSLSocketClient {
             while (!socket.isClosed()){
                     AsuAndVideoData asuAndVideoData =
                             serializationAndDeserialization.inputDeserialization(in);
-                    //commandSwitch(asuAndVideoData);
+                    commandSwitch(asuAndVideoData);
                     viewDialogWithUser.responseMessageServer(asuAndVideoData);
                     asuAndVideoData = null;
                 }
@@ -120,19 +120,23 @@ public class SSLSocketClient {
         parameter.setMeaning(3);
         return parameter;
     }
-    private void commandSwitch(AsuAndVideoData asuAndVideoData) throws IOException, InterruptedException {
+    private void commandSwitch(AsuAndVideoData asuAndVideoData){
 
-        if(asuAndVideoData instanceof PR200){
-            RTUModbus rtu = new RTUModbus(this);
-            rtu.start();
-            rtu = null;
-        }
-        if(asuAndVideoData instanceof DataFile) {
-            DataFile dataFile = (DataFile) asuAndVideoData;
-            CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
-            createsVideoFiles.startNewProcess();
-            //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
-            //log.info(DataFile.class.getName());
+        try {
+            if (asuAndVideoData instanceof PR200) {
+                RTUModbus rtu = new RTUModbus(this);
+                rtu.start();
+                rtu = null;
+            }
+            if (asuAndVideoData instanceof DataFile) {
+                DataFile dataFile = (DataFile) asuAndVideoData;
+                CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
+                createsVideoFiles.startNewProcess();
+                //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
+                //log.info(DataFile.class.getName());
+            }
+        }catch (IOException | InterruptedException e){
+            System.out.println(e.getMessage());
         }
     }
 
