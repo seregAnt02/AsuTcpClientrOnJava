@@ -45,9 +45,8 @@ public class SSLSocketClient {
         this.port = port;
 
 
-        PACKED_VIDEO_FILES = "/src/main/resources/video_content/";
-        String userDirectory = System.getProperty("user.dir");
-        pathFileName = String.valueOf(Path.of(userDirectory + SSLSocketClient.PACKED_VIDEO_FILES));
+        PACKED_VIDEO_FILES = "/var/www/video/";
+        pathFileName = String.valueOf(Path.of(SSLSocketClient.PACKED_VIDEO_FILES));
 
         DeleteVideoFiles deleteVideoFiles = new DeleteVideoFiles();
         deleteVideoFiles.start();
@@ -77,6 +76,7 @@ public class SSLSocketClient {
 
                             listenForModel(socket);
 
+                            asuAndVideoData = null;
                             Scanner scanner = new Scanner(System.in);
                             System.out.print("Введите символ(ы), для выхода из программы: \r\n");
                             scanner.nextLine();
@@ -132,8 +132,7 @@ public class SSLSocketClient {
                 DataFile dataFile = (DataFile) asuAndVideoData;
                 CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
                 createsVideoFiles.startNewProcess();
-                //new SendVideoFiles(this, dataFile).start_send_video_thread_to_server();
-                //log.info(DataFile.class.getName());
+                dataFile = null;
             }
         }catch (IOException | InterruptedException e){
             System.out.println(e.getMessage());

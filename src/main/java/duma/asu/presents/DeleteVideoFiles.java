@@ -18,7 +18,7 @@ public class DeleteVideoFiles extends Thread{
             try {
                 Thread.sleep(10000);
                 int number_file_to_delete = new XmlParser(this.file).number_file_to_delete();
-                file_delete(31);
+                file_delete(number_file_to_delete);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }

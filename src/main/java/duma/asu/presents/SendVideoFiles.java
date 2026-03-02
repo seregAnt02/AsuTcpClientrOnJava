@@ -29,18 +29,17 @@ public class SendVideoFiles extends Thread{
        try {
            for(String packed : this.array_packed_files){
                String[] split_packed = packed.split("/");
-               String path_file = "/" + split_packed[1] + "/" + split_packed[2] + "/" + split_packed[3] + "/" +
-                                  split_packed[4] + "/" + split_packed[5] + "/" + split_packed[6] + "/" +
-                                  split_packed[7] + "/" + split_packed[8] + "/";
+                String path_file = "/" + split_packed[1] + "/" + split_packed[2] + "/" + split_packed[3];
                Thread.sleep(100);
                File directory = new File(path_file);
-               String[] split_extension = split_packed[9].split("\\.");
+               String[] split_extension = split_packed[4].split("\\.");
                convert_file_in_object(directory, split_extension[0] + "." + split_extension[1]);
                directory = null;
                split_extension = null;
                path_file = null;
                split_packed = null;
                packed = null;
+               this.array_packed_files = null;
            }
        } catch (Exception ex){
            log.info(ex.getMessage());
@@ -90,11 +89,5 @@ public class SendVideoFiles extends Thread{
         }
         return fileSet;
     }
-
-
-    /*private void close() {
-        socket.close();
-        System.out.println( "socket.isConnected(): " + socket.isConnected());
-    }*/
 
 }

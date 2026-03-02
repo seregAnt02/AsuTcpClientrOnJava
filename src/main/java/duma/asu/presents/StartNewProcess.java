@@ -63,8 +63,7 @@ public class StartNewProcess {
                         if(split_strip[3].equals("Opening")){
                             String path_file = split_strip[4].substring(1, split_strip[4].length() - 1);
                             array_packed_files.add(path_file);
-                            // строку сравнения переделать
-                            if(path_file.equals("/home/serega02/projectJava/asuTcpClientOnJava/src/main/resources/video_content/dash.mpd.tmp")){
+                            if(path_file.equals(SSLSocketClient.pathFileName + "/dash.mpd.tmp")){
                                 new SendVideoFiles(client, array_packed_files).start_send_video_thread_to_server();
                                 System.out.println(line);
                                 array_packed_files.clear();
