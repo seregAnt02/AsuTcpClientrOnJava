@@ -20,7 +20,7 @@ public class SSLSocketClient {
     private String host;
     private int port;
 
-    protected SerializationAndDeserialization serializationAndDeserialization;
+    public SerializationAndDeserialization serializationAndDeserialization;
     //private String name;
 
     static String PACKED_VIDEO_FILES;
@@ -72,11 +72,14 @@ public class SSLSocketClient {
                             serializationAndDeserialization = new SerializationAndDeserialization(socket, out);
 
                             AsuAndVideoData asuAndVideoData = new PR200("Hello client!!!", null);//dataModelParameter();
-                            sendDataToServer(asuAndVideoData);
+
+                            serializationAndDeserialization.outSerialization(asuAndVideoData);
+                            viewDialogWithUser.sendToServer(asuAndVideoData);
 
                             listenForModel(socket);
 
                             asuAndVideoData = null;
+                            out = null;
                             Scanner scanner = new Scanner(System.in);
                             System.out.print("Введите символ(ы), для выхода из программы: \r\n");
                             scanner.nextLine();
@@ -93,6 +96,7 @@ public class SSLSocketClient {
     public void sendDataToServer(AsuAndVideoData asuAndVideoData){
         serializationAndDeserialization.outSerialization(asuAndVideoData);
         viewDialogWithUser.sendToServer(asuAndVideoData);
+        asuAndVideoData = null;
     }
 
 
@@ -133,7 +137,9 @@ public class SSLSocketClient {
                 CreatesVideoFiles createsVideoFiles = new CreatesVideoFiles(dataFile.getChannel(), this);
                 createsVideoFiles.startNewProcess();
                 dataFile = null;
+                createsVideoFiles = null;
             }
+            asuAndVideoData = null;
         }catch (IOException | InterruptedException e){
             System.out.println(e.getMessage());
         }

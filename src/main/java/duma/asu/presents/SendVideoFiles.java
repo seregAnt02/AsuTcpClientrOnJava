@@ -51,6 +51,7 @@ public class SendVideoFiles extends Thread{
        this.start();
        this.join();
        this.interrupt();
+       this.array_packed_files = null;
     }
 
 
@@ -65,9 +66,10 @@ public class SendVideoFiles extends Thread{
                     dataFile.setData(new byte[(int) (file.length())]);
                     dataFile.setNameFile(file.getName());
                     inputStream.read(dataFile.getData(), 0, (int) file.length());
-                    synchronized (this) {
-                        this.client.sendDataToServer((AsuAndVideoData) dataFile);
-                    }
+                    //synchronized (this) {
+                        //this.client.sendDataToServer((AsuAndVideoData) dataFile);
+                    this.client.serializationAndDeserialization.outSerialization(dataFile);
+                    //}
                     if(file.delete()) System.out.println("Удален файл: " + file.getName());
                     file = null;
                     dataFile = null;

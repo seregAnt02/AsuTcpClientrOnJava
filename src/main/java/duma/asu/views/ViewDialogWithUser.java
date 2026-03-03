@@ -27,6 +27,7 @@ public class ViewDialogWithUser {
             System.out.println("\r\nМодель отправлена серверу, имя клиента: " + ((PR200) asuAndVideoData).getName());
         if(asuAndVideoData instanceof DataFile)
             System.out.println("Модель отправлена серверу, имя файла: " + ((DataFile)asuAndVideoData).getNameFile());
+        asuAndVideoData = null;
     }
 
 

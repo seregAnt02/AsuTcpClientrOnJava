@@ -5,9 +5,10 @@ import duma.asu.models.interfaces.AsuAndVideoData;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
-public class SerializationAndDeserialization {
+public class SerializationAndDeserialization implements Serializable {
 
     private final Socket socket;
     private ObjectOutputStream out;
@@ -34,6 +35,8 @@ public class SerializationAndDeserialization {
         try {
             out.writeObject(asuAndVideoData);
             out.flush();
+            out.reset();
+            asuAndVideoData = null;
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
