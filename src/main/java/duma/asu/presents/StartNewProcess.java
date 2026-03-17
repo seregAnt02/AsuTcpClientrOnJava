@@ -57,9 +57,7 @@ public class StartNewProcess {
             Process process = builder.start();
             array_processes.put(channel, process);
             try{
-                InputStream inputStream = process.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader input = new BufferedReader(inputStreamReader);
+                BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line = null;
                 array_stream.put(channel, input);
                 List<String> array_packed_files = new ArrayList<>();
@@ -125,6 +123,7 @@ public class StartNewProcess {
                     input.close();
                     array_stream.remove(in.getKey());
                     input = null;
+                    in = null;
                 }
             }
         }catch (IOException e){
