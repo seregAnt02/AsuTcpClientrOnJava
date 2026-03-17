@@ -56,6 +56,7 @@ public class SendVideoFiles extends Thread{
 
 
     private void convert_file_in_object(File directory, String file_name) throws InterruptedException {
+        Calendar calendar = new GregorianCalendar();
         int header_length = 4;
             File file = Arrays.stream(directory.listFiles()).filter(n -> n.getName().equals(file_name))
                     .findAny().orElse(null);
@@ -67,10 +68,9 @@ public class SendVideoFiles extends Thread{
                     dataFile.setNameFile(file.getName());
                     inputStream.read(dataFile.getData(), 0, (int) file.length());
                     //synchronized (this) {
-                        //this.client.sendDataToServer((AsuAndVideoData) dataFile);
-                    this.client.serializationAndDeserialization.outSerialization(dataFile);
+                    this.client.getSerializationAndDeserialization().outSerialization(dataFile);
                     //}
-                    if(file.delete()) System.out.println("Удален файл: " + file.getName());
+                    if(file.delete()) System.out.println(calendar.getTime() + " удален файл: " + file.getName());
                     file = null;
                     dataFile = null;
 

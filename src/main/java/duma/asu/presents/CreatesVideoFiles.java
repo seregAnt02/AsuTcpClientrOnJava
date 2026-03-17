@@ -1,5 +1,6 @@
 package duma.asu.presents;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -16,6 +17,7 @@ public class CreatesVideoFiles extends Thread {
     @Override
     public void run() {
         try {
+            System.out.println("Start new thread name: " + this.getName());
             startNewProcess.createProcess();
         }catch (Exception ex){
             System.out.println(ex.getMessage());
@@ -23,8 +25,9 @@ public class CreatesVideoFiles extends Thread {
     }
 
 
-    public void startNewProcess() throws InterruptedException {
+    public void startNewProcess() throws InterruptedException, IOException {
         startNewProcess.killProc();
+        startNewProcess.closeStream();
         this.start();
     }
 }

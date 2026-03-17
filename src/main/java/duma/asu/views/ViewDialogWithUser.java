@@ -23,10 +23,11 @@ public class ViewDialogWithUser {
 
 
     public void sendToServer(AsuAndVideoData asuAndVideoData){
+        Calendar calendar = new GregorianCalendar();
         if(asuAndVideoData instanceof PR200)
-            System.out.println("\r\nМодель отправлена серверу, имя клиента: " + ((PR200) asuAndVideoData).getName());
+            System.out.println(calendar.getTime() + " модель отправлена серверу, имя клиента: " + ((PR200) asuAndVideoData).getName());
         if(asuAndVideoData instanceof DataFile)
-            System.out.println("Модель отправлена серверу, имя файла: " + ((DataFile)asuAndVideoData).getNameFile());
+            System.out.println(calendar.getTime() + " модель отправлена серверу, имя файла: " + ((DataFile)asuAndVideoData).getNameFile());
         asuAndVideoData = null;
     }
 

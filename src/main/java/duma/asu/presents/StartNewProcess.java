@@ -2,18 +2,20 @@ package duma.asu.presents;
 
 import duma.asu.models.AdressVideoChannel;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StartNewProcess {
     private SSLSocketClient client;
     private Logger log;
     private Integer channel;
-    public static Map<Integer, Process> array_processes = new HashMap<>();
+    private static Map<Integer, Process> array_processes = new HashMap<>();
+    private static Map<Integer, BufferedReader> array_stream = new HashMap<>();
 
 
     public StartNewProcess(int channel, SSLSocketClient client) throws SocketException, UnknownHostException {
@@ -54,8 +56,12 @@ public class StartNewProcess {
             builder.command(command);
             Process process = builder.start();
             array_processes.put(channel, process);
-            try(BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
+            try{
+                InputStream inputStream = process.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader input = new BufferedReader(inputStreamReader);
+                String line = null;
+                array_stream.put(channel, input);
                 List<String> array_packed_files = new ArrayList<>();
                 while ((line = input.readLine()) != null) {
                     if(line.startsWith("dash", 1)){
@@ -76,6 +82,8 @@ public class StartNewProcess {
                 array_packed_files = null;
                 line = null;
                 input.close();
+            }catch (IOException e){
+                System.out.println(e.getMessage());
             }
             builder = null;
             process = null;
@@ -107,4 +115,21 @@ public class StartNewProcess {
             System.out.println(ex.getMessage());
         }
     }
+
+
+    protected void closeStream() {
+        try {
+            for (Map.Entry<Integer, BufferedReader> in : array_stream.entrySet()) {
+                if (in.getKey().equals(this.channel)) {
+                    BufferedReader input = in.getValue();
+                    input.close();
+                    array_stream.remove(in.getKey());
+                    input = null;
+                }
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
 }

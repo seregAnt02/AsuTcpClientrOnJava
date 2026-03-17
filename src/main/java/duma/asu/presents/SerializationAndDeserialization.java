@@ -19,7 +19,7 @@ public class SerializationAndDeserialization implements Serializable {
     }
 
 
-    protected AsuAndVideoData inputDeserialization(ObjectInputStream in){
+    public AsuAndVideoData inputDeserialization(ObjectInputStream in){
         try {
             AsuAndVideoData parameter = (AsuAndVideoData) in.readUnshared();
             return parameter;
@@ -31,7 +31,7 @@ public class SerializationAndDeserialization implements Serializable {
 
 
 
-    protected void outSerialization(AsuAndVideoData asuAndVideoData) {
+    public void outSerialization(AsuAndVideoData asuAndVideoData) {
         try {
             out.writeObject(asuAndVideoData);
             out.flush();

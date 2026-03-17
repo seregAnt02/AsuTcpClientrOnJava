@@ -191,7 +191,8 @@ public class RTUModbus extends Thread{
                         // parsHexToInt
                         AsuAndVideoData sendDataParameter = parsHexToParameter(data);
                         // send data
-                        client.sendDataToServer(sendDataParameter);
+                        client.getSerializationAndDeserialization().outSerialization(sendDataParameter);
+                        client.getViewDialogWithUser().sendToServer(sendDataParameter);
                     }
                     serialPort.closePort();
                     //Thread.sleep(300);

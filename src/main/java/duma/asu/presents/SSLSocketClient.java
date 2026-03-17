@@ -20,7 +20,7 @@ public class SSLSocketClient {
     private String host;
     private int port;
 
-    public SerializationAndDeserialization serializationAndDeserialization;
+    private SerializationAndDeserialization serializationAndDeserialization;
     //private String name;
 
     static String PACKED_VIDEO_FILES;
@@ -93,12 +93,6 @@ public class SSLSocketClient {
         }).start();
     }
 
-    public void sendDataToServer(AsuAndVideoData asuAndVideoData){
-        serializationAndDeserialization.outSerialization(asuAndVideoData);
-        viewDialogWithUser.sendToServer(asuAndVideoData);
-        asuAndVideoData = null;
-    }
-
 
     
     private void listenForModel(Socket socket){
@@ -153,5 +147,14 @@ public class SSLSocketClient {
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public ViewDialogWithUser getViewDialogWithUser(){
+        return viewDialogWithUser;
+    }
+
+
+    public  SerializationAndDeserialization getSerializationAndDeserialization(){
+        return serializationAndDeserialization;
     }
 }
