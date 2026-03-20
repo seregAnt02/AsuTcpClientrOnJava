@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,14 +80,13 @@ public class StartNewProcess {
                 }
                 array_packed_files = null;
                 line = null;
+                builder = null;
+                process = null;
+                command = null;
                 input.close();
             }catch (IOException e){
                 System.out.println(e.getMessage());
             }
-            builder = null;
-            process = null;
-            command = null;
-
         } catch (Exception err) {
             err.printStackTrace();
         }
@@ -98,15 +98,26 @@ public class StartNewProcess {
             for (Map.Entry<Integer, Process> run: array_processes.entrySet()){
                 if(run.getKey().equals(this.channel)){
                     Process process = run.getValue();
+                    ProcessHandle processHandle = process.toHandle();
 
                     process.destroy();
+                    if(process.isAlive())
+                        process.destroyForcibly();
 
-                    array_processes.remove(run.getKey());
-
-                    System.out.println("Процесс " + process.pid() + " удален.");
+                    CompletableFuture onProcessExit = processHandle.onExit();
+                    onProcessExit.get();
+                    if(!processHandle.isAlive()) {
+                        log.info("Alive: " + processHandle.isAlive());
+                        array_processes.remove(run.getKey());
+                        System.out.println("Процесс " + process.pid() + " удален.");
+                    }
+                    onProcessExit.thenAccept(ph -> {
+                        log.info("Has stopped");
+                    });
 
                     run = null;
                     process = null;
+                    onProcessExit = null;
                 }
             }
         } catch (Exception ex){
