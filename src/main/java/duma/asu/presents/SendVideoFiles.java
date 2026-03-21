@@ -67,9 +67,9 @@ public class SendVideoFiles extends Thread{
                     dataFile.setData(new byte[(int) (file.length())]);
                     dataFile.setNameFile(file.getName());
                     inputStream.read(dataFile.getData(), 0, (int) file.length());
-                    //synchronized (this) {
+                    synchronized (this) {
                     this.client.getSerializationAndDeserialization().outSerialization(dataFile);
-                    //}
+                    }
                     if(file.delete()) System.out.println(calendar.getTime() + " удален файл: " + file.getName());
                     file = null;
                     dataFile = null;

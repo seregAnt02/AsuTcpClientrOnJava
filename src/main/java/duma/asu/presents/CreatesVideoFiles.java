@@ -27,7 +27,7 @@ public class CreatesVideoFiles extends Thread {
 
     public void startNewProcess() throws InterruptedException, IOException {
         startNewProcess.killProc();
-        startNewProcess.closeStream();
+        //startNewProcess.closeStream();
         this.start();
     }
 }

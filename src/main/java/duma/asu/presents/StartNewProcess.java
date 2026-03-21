@@ -16,7 +16,6 @@ public class StartNewProcess {
     private Logger log;
     private Integer channel;
     private static Map<Integer, Process> array_processes = new HashMap<>();
-    private static Map<Integer, BufferedReader> array_stream = new HashMap<>();
 
 
     public StartNewProcess(int channel, SSLSocketClient client) throws SocketException, UnknownHostException {
@@ -60,7 +59,6 @@ public class StartNewProcess {
             try{
                 BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line = null;
-                array_stream.put(channel, input);
                 List<String> array_packed_files = new ArrayList<>();
                 while ((line = input.readLine()) != null) {
                     if(line.startsWith("dash", 1)){
@@ -84,6 +82,7 @@ public class StartNewProcess {
                 process = null;
                 command = null;
                 input.close();
+                input = null;
             }catch (IOException e){
                 System.out.println(e.getMessage());
             }
@@ -118,27 +117,11 @@ public class StartNewProcess {
                     run = null;
                     process = null;
                     onProcessExit = null;
+                    processHandle = null;
                 }
             }
         } catch (Exception ex){
             System.out.println(ex.getMessage());
-        }
-    }
-
-
-    protected void closeStream() {
-        try {
-            for (Map.Entry<Integer, BufferedReader> in : array_stream.entrySet()) {
-                if (in.getKey().equals(this.channel)) {
-                    BufferedReader input = in.getValue();
-                    input.close();
-                    array_stream.remove(in.getKey());
-                    input = null;
-                    in = null;
-                }
-            }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
         }
     }
 
